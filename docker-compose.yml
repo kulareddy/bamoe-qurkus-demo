@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # BAMOE Maven Repository - First to start
+  bamoe-maven-repo:
+    image: quay.io/bamoe/maven-repository:9.2.1-ibm-0005
+    container_name: bamoe-maven-repository
+    ports:
+      - "${MAVEN_REPO_PORT:-9080}:8080"
+    networks:
+      - kogito-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # PostgreSQL Database - Official Library Image
+  postgres:
+    image: postgres:14-alpine
+    container_name: kogito-postgres
+    environment:
+      POSTGRES_DB: kogito
+      POSTGRES_USER: kogito
+      POSTGRES_PASSWORD: kogito
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kogito-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kogito -d kogito"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  kogito-network:
+    driver: bridge

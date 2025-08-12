@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20230324/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20230324/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="https://kie.org/dmn/extensions/1.0" expressionLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/" namespace="https://kie.org/dmn/_5F1B9EEC-8F20-4D4D-9F82-651A28A4F210" id="_A94D175E-BECA-43C3-8E25-7BFF596F3D40" name="ValidateMurchant">
+  <inputData name="CardType" id="_D0DB974F-4819-483A-AE21-338EDCDDB36F">
+    <variable name="CardType" id="_8DD63D4D-8C55-4096-87F7-95F9CC11B116" typeRef="string" />
+  </inputData>
+  <decision name="CardAccepted" id="_51520134-37D1-48C4-9B60-3D6E38CC4FF9">
+    <variable id="_83B332FA-BA1F-438A-A80A-EB1497B8D20F" typeRef="boolean" name="CardAccepted" />
+    <informationRequirement id="_ECA5B317-B524-49FA-9B75-7AAE7B329D85">
+      <requiredInput href="#_D0DB974F-4819-483A-AE21-338EDCDDB36F" />
+    </informationRequirement>
+    <decisionTable id="_CA3DE7AB-4BEF-49B2-8D86-5A46BF20A3AC" typeRef="boolean" hitPolicy="UNIQUE" label="CardAccepted">
+      <input id="_C498EA2C-B62C-41E2-B852-43339B87F45F">
+        <inputExpression id="_0C61DF2F-EE03-4B19-A645-EB1A15B96036" typeRef="string">
+          <text>CardType</text>
+        </inputExpression>
+      </input>
+      <output id="_1C3DFDE2-2356-4947-8684-0B8A32984FCB" />
+      <annotation name="Annotations" />
+      <rule id="_7D2638AE-D64B-4C9D-B635-F6EEF05AE703">
+        <inputEntry id="_FFBFDF95-6DC5-46A7-9978-47CDB9853984">
+          <text>&quot;MASTER&quot;,&quot;VISA&quot;</text>
+        </inputEntry>
+        <outputEntry id="_6105FFFB-8F6A-41BC-8AF1-0ACDA3DB0D09">
+          <text>true</text>
+        </outputEntry>
+        <annotationEntry>
+          <text></text>
+        </annotationEntry>
+      </rule>
+      <rule id="_8C2A730F-04B3-4497-9A5C-0837D25C6B82">
+        <inputEntry id="_25BEC12D-542A-48C3-B9F4-E70E68220C9A">
+          <text>&quot;AMEX&quot;,&quot;DISCOVER&quot;</text>
+        </inputEntry>
+        <outputEntry id="_F4F70060-2539-4B1F-8D9B-D87DE0CBF139">
+          <text>false</text>
+        </outputEntry>
+        <annotationEntry>
+          <text>// Your annotations here</text>
+        </annotationEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_EE01BD29-CB39-4D10-AFF2-8B08AC6487CC" name="" useAlternativeInputDataShape="false">
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_CA3DE7AB-4BEF-49B2-8D86-5A46BF20A3AC">
+            <kie:width>60</kie:width>
+            <kie:width>100</kie:width>
+            <kie:width>118</kie:width>
+            <kie:width>240</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+      <dmndi:DMNShape id="_649D00FA-1354-4BC9-8245-3A0E663E223D" dmnElementRef="_D0DB974F-4819-483A-AE21-338EDCDDB36F" isCollapsed="false" isListedInputData="false">
+        <dc:Bounds x="100" y="300" width="160" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="_93E92E10-06BA-4A09-AAD0-3D17AF5FF026" dmnElementRef="_51520134-37D1-48C4-9B60-3D6E38CC4FF9" isCollapsed="false" isListedInputData="false">
+        <dc:Bounds x="100" y="100" width="160" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="_776C4EFB-5313-44C2-B117-AF39F1EC5A0F-AUTO-TARGET" dmnElementRef="_ECA5B317-B524-49FA-9B75-7AAE7B329D85" sourceElement="_649D00FA-1354-4BC9-8245-3A0E663E223D" targetElement="_93E92E10-06BA-4A09-AAD0-3D17AF5FF026">
+        <di:waypoint x="180" y="340" />
+        <di:waypoint x="180" y="140" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
