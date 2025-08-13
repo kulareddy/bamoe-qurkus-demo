@@ -1,14 +1,5 @@
 package com.shop.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class DrinkOrder {
     private String orderId;
     private DrinkType drinkType;
@@ -16,6 +7,95 @@ public class DrinkOrder {
     private OrderStatus orderStatus;
     private CardPayment cardPayment;
     private PaymentType paymentType;
+    
+    // Default constructor
+    public DrinkOrder() {}
+    
+    // Constructor with main fields
+    public DrinkOrder(String orderId, DrinkType drinkType, DrinkSize drinkSize, 
+                     OrderStatus orderStatus, PaymentType paymentType) {
+        this.orderId = orderId;
+        this.drinkType = drinkType;
+        this.drinkSize = drinkSize;
+        this.orderStatus = orderStatus;
+        this.paymentType = paymentType;
+    }
+    
+    // Full constructor
+    public DrinkOrder(String orderId, DrinkType drinkType, DrinkSize drinkSize,
+                     OrderStatus orderStatus, CardPayment cardPayment, 
+                     PaymentType paymentType) {
+        this.orderId = orderId;
+        this.drinkType = drinkType;
+        this.drinkSize = drinkSize;
+        this.orderStatus = orderStatus;
+        this.cardPayment = cardPayment;
+        this.paymentType = paymentType;
+    }
+    
+    // Getters
+    public String getOrderId() {
+        return orderId;
+    }
+    
+    public DrinkType getDrinkType() {
+        return drinkType;
+    }
+    
+    public DrinkSize getDrinkSize() {
+        return drinkSize;
+    }
+    
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+    
+    public CardPayment getCardPayment() {
+        return cardPayment;
+    }
+    
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+    
+    // Setters
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+    
+    public void setDrinkType(DrinkType drinkType) {
+        this.drinkType = drinkType;
+    }
+    
+    public void setDrinkSize(DrinkSize drinkSize) {
+        this.drinkSize = drinkSize;
+    }
+    
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+    
+    public void setCardPayment(CardPayment cardPayment) {
+        this.cardPayment = cardPayment;
+    }
+    
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+    }
+    
+    
+    @Override
+    public String toString() {
+        return "DrinkOrder{" +
+                "orderId='" + orderId + '\'' +
+                ", drinkType=" + drinkType +
+                ", drinkSize=" + drinkSize +
+                ", orderStatus=" + orderStatus +
+                ", cardPayment=" + cardPayment +
+                ", paymentType=" + paymentType +
+                '}';
+    }
+    
     public enum DrinkType {
         COFFEE("COFFEE"),
         LATTE("LATTE"),

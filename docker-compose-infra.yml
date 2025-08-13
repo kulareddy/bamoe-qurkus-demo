@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # BAMOE Maven Repository
+  bamoe-maven-repo:
+    image: quay.io/bamoe/maven-repository:9.2.1-ibm-0005
+    container_name: bamoe-maven-repository
+    ports:
+      - "${MAVEN_REPO_PORT:-9080}:8080"
+    networks:
+      - kogito-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: kogito-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kogito}
+      POSTGRES_USER: ${POSTGRES_USER:-kogito}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kogito}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kogito-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kogito -d kogito"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Apache Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: kafka-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+    - "${ZOOKEEPER_PORT:-2181}:2181"
+    networks:
+      - kogito-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-broker
+    depends_on:
+      - zookeeper
+    ports:
+    - "${KAFKA_PORT:-9092}:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - kogito-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  kogito-network:
+    name: kogito-network
+    driver: bridge

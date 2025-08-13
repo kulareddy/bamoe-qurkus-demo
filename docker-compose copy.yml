@@ -155,41 +155,41 @@ services:
       - kogito-network
 
   # Kogito Services
-  brew-app:
-    build: 
-      context: ./brew-app
-      dockerfile: src/main/docker/Dockerfile.jvm
-    container_name: kogito-brew-service
-    ports:
-      - "8081:8080"
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      QUARKUS_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      QUARKUS_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-    depends_on:
-      - kafka
-      - postgres
-    networks:
-      - kogito-network
+  # brew-app:
+  #   build: 
+  #     context: ./brew-app
+  #     dockerfile: src/main/docker/Dockerfile.jvm
+  #   container_name: kogito-brew-service
+  #   ports:
+  #     - "8081:8080"
+  #   environment:
+  #     KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  #     QUARKUS_DATASOURCE_USERNAME: ${POSTGRES_USER}
+  #     QUARKUS_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+  #     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+  #   depends_on:
+  #     - kafka
+  #     - postgres
+  #   networks:
+  #     - kogito-network
 
-  order-app:
-    build:
-      context: ./order-app
-      dockerfile: src/main/docker/Dockerfile.jvm
-    container_name: kogito-order-service
-    ports:
-      - "8082:8080"
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      QUARKUS_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      QUARKUS_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-    depends_on:
-      - kafka
-      - postgres
-    networks:
-      - kogito-network
+  # order-app:
+  #   build:
+  #     context: ./order-app
+  #     dockerfile: src/main/docker/Dockerfile.jvm
+  #   container_name: kogito-order-service
+  #   ports:
+  #     - "8082:8080"
+  #   environment:
+  #     KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  #     QUARKUS_DATASOURCE_USERNAME: ${POSTGRES_USER}
+  #     QUARKUS_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+  #     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+  #   depends_on:
+  #     - kafka
+  #     - postgres
+  #   networks:
+  #     - kogito-network
 
 volumes:
   postgres_data:

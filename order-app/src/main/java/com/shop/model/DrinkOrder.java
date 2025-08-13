@@ -7,8 +7,6 @@ public class DrinkOrder {
     private OrderStatus orderStatus;
     private CardPayment cardPayment;
     private PaymentType paymentType;
-    private String processInstanceId;
-    private String businessKey;
     
     // Default constructor
     public DrinkOrder() {}
@@ -26,15 +24,13 @@ public class DrinkOrder {
     // Full constructor
     public DrinkOrder(String orderId, DrinkType drinkType, DrinkSize drinkSize,
                      OrderStatus orderStatus, CardPayment cardPayment, 
-                     PaymentType paymentType, String processInstanceId, String businessKey) {
+                     PaymentType paymentType) {
         this.orderId = orderId;
         this.drinkType = drinkType;
         this.drinkSize = drinkSize;
         this.orderStatus = orderStatus;
         this.cardPayment = cardPayment;
         this.paymentType = paymentType;
-        this.processInstanceId = processInstanceId;
-        this.businessKey = businessKey;
     }
     
     // Getters
@@ -62,14 +58,6 @@ public class DrinkOrder {
         return paymentType;
     }
     
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
-    
-    public String getBusinessKey() {
-        return businessKey;
-    }
-    
     // Setters
     public void setOrderId(String orderId) {
         this.orderId = orderId;
@@ -95,13 +83,6 @@ public class DrinkOrder {
         this.paymentType = paymentType;
     }
     
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-    }
-    
-    public void setBusinessKey(String businessKey) {
-        this.businessKey = businessKey;
-    }
     
     @Override
     public String toString() {
@@ -112,8 +93,6 @@ public class DrinkOrder {
                 ", orderStatus=" + orderStatus +
                 ", cardPayment=" + cardPayment +
                 ", paymentType=" + paymentType +
-                ", processInstanceId='" + processInstanceId + '\'' +
-                ", businessKey='" + businessKey + '\'' +
                 '}';
     }
     

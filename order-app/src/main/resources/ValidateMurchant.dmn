@@ -18,7 +18,7 @@
       <annotation name="Annotations" />
       <rule id="_7D2638AE-D64B-4C9D-B635-F6EEF05AE703">
         <inputEntry id="_FFBFDF95-6DC5-46A7-9978-47CDB9853984">
-          <text>&quot;MASTER&quot;,&quot;VISA&quot;</text>
+          <text>&quot;MASTER&quot;</text>
         </inputEntry>
         <outputEntry id="_6105FFFB-8F6A-41BC-8AF1-0ACDA3DB0D09">
           <text>true</text>
@@ -29,13 +29,35 @@
       </rule>
       <rule id="_8C2A730F-04B3-4497-9A5C-0837D25C6B82">
         <inputEntry id="_25BEC12D-542A-48C3-B9F4-E70E68220C9A">
-          <text>&quot;AMEX&quot;,&quot;DISCOVER&quot;</text>
+          <text>&quot;AMEX&quot;</text>
         </inputEntry>
         <outputEntry id="_F4F70060-2539-4B1F-8D9B-D87DE0CBF139">
           <text>false</text>
         </outputEntry>
         <annotationEntry>
           <text>// Your annotations here</text>
+        </annotationEntry>
+      </rule>
+      <rule id="_EF4FB7E0-9C97-43F2-8ADC-F58ABC47DF59">
+        <inputEntry id="_35FB556B-FC41-44E1-823D-E82482683704">
+          <text>&quot;VISA&quot;</text>
+        </inputEntry>
+        <outputEntry id="_6C3C3FC3-5E9B-4922-8E8E-382BD40E51C3">
+          <text>true</text>
+        </outputEntry>
+        <annotationEntry>
+          <text></text>
+        </annotationEntry>
+      </rule>
+      <rule id="_4219E1FA-AB83-4577-9CB5-4EB14B263D8C">
+        <inputEntry id="_2B5FAD3D-FF35-44E7-99AF-16876BEB0D3B">
+          <text>&quot;DISCOVER&quot;</text>
+        </inputEntry>
+        <outputEntry id="_800DA483-A757-411B-89E2-1F9BCE5D9CCA">
+          <text>false</text>
+        </outputEntry>
+        <annotationEntry>
+          <text></text>
         </annotationEntry>
       </rule>
     </decisionTable>
@@ -46,7 +68,7 @@
         <kie:ComponentsWidthsExtension>
           <kie:ComponentWidths dmnElementRef="_CA3DE7AB-4BEF-49B2-8D86-5A46BF20A3AC">
             <kie:width>60</kie:width>
-            <kie:width>100</kie:width>
+            <kie:width>118</kie:width>
             <kie:width>118</kie:width>
             <kie:width>240</kie:width>
           </kie:ComponentWidths>

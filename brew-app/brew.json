@@ -1,0 +1,27 @@
+{
+    "specversion": "1.0",
+    "id": "b9663782-e2f3-4167-bb3a-e8ccde0d8054",
+    "source": "/process/MakeDrink",
+    "type": "drink-ready",
+    "time": "2025-08-12T20:52:38.807073-05:00",
+    "kogitoprocrefid": "a92b74f1-bda7-4166-b52d-c8744dc30be6",
+    "kogitoproctype": "BPMN",
+    "kogitoprocinstanceid": "e61388ef-2c41-4363-8091-32f1375733ea",
+    "kogitoprocist": "Active",
+    "kogitoprocversion": "1.0",
+    "kogitoprocid": "MakeDrink",
+    "data": {
+        "orderId": "a92b74f1-bda7-4166-b52d-c8744dc30be6",
+        "drinkType": "CAPPUCCINO",
+        "drinkSize": "LARGE",
+        "orderStatus": "READY",
+        "cardPayment": {
+            "cardNumber": "1111222233334444",
+            "expDate": "10/2030",
+            "nameOnCard": "J Doe",
+            "amount": 5.99,
+            "cardType": "VISA"
+        },
+        "paymentType": "CARD"
+    }
+}
