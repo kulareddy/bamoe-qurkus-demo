@@ -60,9 +60,13 @@
             <groupId>org.kie</groupId>
             <artifactId>kie-addons-quarkus-process-management</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-addons-quarkus-task-management</artifactId>
+        </dependency> -->
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kogito-addons-quarkus-jobs-management</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
@@ -111,10 +115,6 @@
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
-            <artifactId>kogito-addons-quarkus-jobs-management</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kie</groupId>
             <artifactId>kogito-addons-quarkus-jobs</artifactId>
         </dependency>  
         <dependency>
@@ -155,10 +155,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
           <groupId>com.ibm.bamoe</groupId>
           <artifactId>bamoe-quarkus-devui</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -252,5 +252,17 @@
                 <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
         </profile>
+        <!-- <profile>
+            <id>dev</id>
+            <properties>
+                <quarkus.profile>dev</quarkus.profile>
+            </properties>
+            <dependencies>
+                <dependency>
+                <groupId>com.ibm.bamoe</groupId>
+                <artifactId>bamoe-quarkus-devui</artifactId>
+                </dependency>        
+            </dependencies>
+        </profile> -->
     </profiles>
 </project>
