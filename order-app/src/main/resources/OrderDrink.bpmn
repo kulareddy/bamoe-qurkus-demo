@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_e4y5UFoPED6_-q40xzJrRw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_uGdLoF4HED6GmMktfmu7IQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_drinkOrderItem" structureRef="com.shop.model.DrinkOrder"/>
   <bpmn2:itemDefinition id="_cardPaymentItem" structureRef="com.shop.model.CardPayment"/>
   <bpmn2:itemDefinition id="_cardAcceptedItem" structureRef="Boolean"/>
@@ -36,8 +36,8 @@
   <bpmn2:itemDefinition id="make-drinkType" structureRef="com.shop.model.DrinkOrder"/>
   <bpmn2:itemDefinition id="__DA6DF8EF-A0D2-40CC-B4E8-9D882512A881_eventOutputXItem" structureRef="com.shop.model.DrinkOrder"/>
   <bpmn2:itemDefinition id="drink-readyType" structureRef="com.shop.model.DrinkOrder"/>
-  <bpmn2:itemDefinition id="_929F8F8F-6F07-4A01-AFE6-FEF3FB9007D4" structureRef=""/>
-  <bpmn2:itemDefinition id="_5D4DE818-CCCF-4D2F-AEF2-65DE7804B88D" structureRef=""/>
+  <bpmn2:itemDefinition id="_84D668F8-3901-4685-B290-FEDB41C5CB82" structureRef=""/>
+  <bpmn2:itemDefinition id="_6B97690C-0FD7-4E75-BEC8-BE4A9EF61CB6" structureRef=""/>
   <bpmn2:error id="PaymentError" errorCode="PaymentError"/>
   <bpmn2:message id="_AFDC49E1-6F91-40ED-AF07-0011851D3F01_InMessage" itemRef="_AFDC49E1-6F91-40ED-AF07-0011851D3F01_InMessageType"/>
   <bpmn2:message id="_AFDC49E1-6F91-40ED-AF07-0011851D3F01_OutMessage" itemRef="_AFDC49E1-6F91-40ED-AF07-0011851D3F01_OutMessageType"/>
@@ -50,10 +50,10 @@
   <bpmn2:error id="PaymentError" errorCode="PaymentError"/>
   <bpmn2:error id="PaymentError" errorCode="PaymentError"/>
   <bpmn2:error id="PaymentError" errorCode="PaymentError"/>
-  <bpmn2:message id="_e40HcFoPED6_-q40xzJrRw" itemRef="make-drinkType" name="make-drink"/>
-  <bpmn2:message id="_e40HcVoPED6_-q40xzJrRw" itemRef="drink-readyType" name="drink-ready"/>
-  <bpmn2:collaboration id="_0CE78FA0-AD8D-4222-8C0D-8F23D9DBB9C0" name="Default Collaboration">
-    <bpmn2:participant id="_2A54D9EA-A49A-4C08-B8A4-0BA54BD632B2" name="Pool Participant" processRef="OrderDrink"/>
+  <bpmn2:message id="_uGeZwF4HED6GmMktfmu7IQ" itemRef="make-drinkType" name="make-drink"/>
+  <bpmn2:message id="_uGeZwV4HED6GmMktfmu7IQ" itemRef="drink-readyType" name="drink-ready"/>
+  <bpmn2:collaboration id="_6CEB0829-7EF9-4F02-8848-98B3D278EF6F" name="Default Collaboration">
+    <bpmn2:participant id="_26F7500B-A365-4D21-BF8D-A306FB8DB080" name="Pool Participant" processRef="OrderDrink"/>
   </bpmn2:collaboration>
   <bpmn2:process id="OrderDrink" drools:packageName="com.shop" drools:version="1.0" drools:adHoc="false" name="OrderDrink" isExecutable="true" processType="Public">
     <bpmn2:property id="drinkOrder" itemSubjectRef="_drinkOrderItem" name="drinkOrder"/>
@@ -93,9 +93,6 @@
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !cardAccepted;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_04571EDB-E776-46F0-8397-0017005896FC" sourceRef="_A6B49E14-E5B1-403E-BC5A-541DC15A75B3" targetRef="_221121AC-7AE0-4A7C-BE9D-9C1FE2E5C6A6"/>
-    <bpmn2:sequenceFlow id="_EE670E46-7657-4C07-824D-E973F5966BDF" sourceRef="_E226D332-7F64-4996-9A76-9EB46EEBA701" targetRef="_26415C2C-F04D-4114-A6A4-A4F4AB4541B1">
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "YES".equals(paymentStatus);]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B4482F61-E25A-4DD9-9E45-B8A637098CBC" sourceRef="_E226D332-7F64-4996-9A76-9EB46EEBA701" targetRef="_E1C783AC-C9A5-4F2E-9FAE-2F2C16EC4DB9">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -104,8 +101,14 @@
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "NO".equals(paymentStatus);]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_EE670E46-7657-4C07-824D-E973F5966BDF" sourceRef="_E226D332-7F64-4996-9A76-9EB46EEBA701" targetRef="_26415C2C-F04D-4114-A6A4-A4F4AB4541B1">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "YES".equals(paymentStatus);]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_400263A3-70D0-4899-ABDB-76C8EAF6C7CB" sourceRef="_0520EFFB-3C7E-4655-A677-D2257521A084" targetRef="_C5DDE64E-1A28-4EDD-B1DA-1B5B42709B7B"/>
     <bpmn2:sequenceFlow id="_AEFE3E97-C826-4955-9D0E-A6034C1765E4" sourceRef="_26415C2C-F04D-4114-A6A4-A4F4AB4541B1" targetRef="_0520EFFB-3C7E-4655-A677-D2257521A084"/>
+    <bpmn2:sequenceFlow id="_F06CC2B0-BCC2-42CD-BB05-B3FF1E2B90F8" sourceRef="_C6DB543F-386F-4AB6-A2B7-AFF3A725442B" targetRef="_26415C2C-F04D-4114-A6A4-A4F4AB4541B1">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "SUCCESS".equals(paymentStatus);]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_DEAFFBB0-FD0D-4DE6-A8E0-AA57B9BEAFEA" sourceRef="_C6DB543F-386F-4AB6-A2B7-AFF3A725442B" targetRef="_F4595A6B-C0CA-4DF7-A220-5B01E8864C01">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -116,16 +119,13 @@
 return "FAILED".equals(paymentStatus);
 ]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_F06CC2B0-BCC2-42CD-BB05-B3FF1E2B90F8" sourceRef="_C6DB543F-386F-4AB6-A2B7-AFF3A725442B" targetRef="_26415C2C-F04D-4114-A6A4-A4F4AB4541B1">
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "SUCCESS".equals(paymentStatus);]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_657F8406-BA92-486D-975E-23530C04E979" sourceRef="_BD6210E3-F7CB-4734-9A5A-8D4CD8B2B104" targetRef="_E226D332-7F64-4996-9A76-9EB46EEBA701"/>
     <bpmn2:sequenceFlow id="_FAB2F174-6740-4102-9B8E-EBB376BB0634" sourceRef="_2B212F56-B150-4BA7-B2E6-173919E50E4C" targetRef="_BD6210E3-F7CB-4734-9A5A-8D4CD8B2B104"/>
-    <bpmn2:sequenceFlow id="_D44A5F29-F1E2-4C45-9CB2-A95DCB406078" sourceRef="_C602F484-F9B0-43B2-B421-BD92A978A6C3" targetRef="_2B212F56-B150-4BA7-B2E6-173919E50E4C">
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "CASH".equals(drinkOrder.getPaymentType().name());]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_88C363CC-C1D6-46B5-AA89-711022F1272B" sourceRef="_C602F484-F9B0-43B2-B421-BD92A978A6C3" targetRef="_A6B49E14-E5B1-403E-BC5A-541DC15A75B3">
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "CARD".equals(drinkOrder.getPaymentType().name());]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_D44A5F29-F1E2-4C45-9CB2-A95DCB406078" sourceRef="_C602F484-F9B0-43B2-B421-BD92A978A6C3" targetRef="_2B212F56-B150-4BA7-B2E6-173919E50E4C">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "CASH".equals(drinkOrder.getPaymentType().name());]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_4D7E36D6-9A32-4109-A4F4-7841B6C1D260" sourceRef="_AFDC49E1-6F91-40ED-AF07-0011851D3F01" targetRef="_C6DB543F-386F-4AB6-A2B7-AFF3A725442B"/>
     <bpmn2:sequenceFlow id="_298E7AAB-E03C-470D-998F-FC441BFB0225" sourceRef="_221121AC-7AE0-4A7C-BE9D-9C1FE2E5C6A6" targetRef="_AFDC49E1-6F91-40ED-AF07-0011851D3F01">
@@ -149,7 +149,7 @@ return "FAILED".equals(paymentStatus);
       <bpmn2:outputSet>
         <bpmn2:dataOutputRefs>_DA6DF8EF-A0D2-40CC-B4E8-9D882512A881_eventOutputX</bpmn2:dataOutputRefs>
       </bpmn2:outputSet>
-      <bpmn2:messageEventDefinition drools:msgref="drink-ready" messageRef="_e40HcVoPED6_-q40xzJrRw"/>
+      <bpmn2:messageEventDefinition drools:msgref="drink-ready" messageRef="_uGeZwV4HED6GmMktfmu7IQ"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:intermediateThrowEvent id="_C5DDE64E-1A28-4EDD-B1DA-1B5B42709B7B" name="Make Drink">
       <bpmn2:extensionElements>
@@ -167,10 +167,11 @@ return "FAILED".equals(paymentStatus);
       <bpmn2:inputSet>
         <bpmn2:dataInputRefs>_C5DDE64E-1A28-4EDD-B1DA-1B5B42709B7B_eventInputX</bpmn2:dataInputRefs>
       </bpmn2:inputSet>
-      <bpmn2:messageEventDefinition drools:msgref="make-drink" messageRef="_e40HcFoPED6_-q40xzJrRw"/>
+      <bpmn2:messageEventDefinition drools:msgref="make-drink" messageRef="_uGeZwF4HED6GmMktfmu7IQ"/>
     </bpmn2:intermediateThrowEvent>
     <bpmn2:endEvent id="_97B6A0D2-B344-40A9-9B10-19EC95AC9756">
       <bpmn2:incoming>_61D27EF3-7385-41CB-88D4-51A0B8DE345D</bpmn2:incoming>
+      <bpmn2:terminateEventDefinition/>
     </bpmn2:endEvent>
     <bpmn2:endEvent id="_389EA3A3-E14C-4E59-8DAF-7A8609BC81DE">
       <bpmn2:incoming>_9E1B61FB-1619-44DA-9E0B-9F5DF71F7C99</bpmn2:incoming>
@@ -256,8 +257,8 @@ return "FAILED".equals(paymentStatus);
     </bpmn2:endEvent>
     <bpmn2:exclusiveGateway id="_E226D332-7F64-4996-9A76-9EB46EEBA701" gatewayDirection="Diverging">
       <bpmn2:incoming>_657F8406-BA92-486D-975E-23530C04E979</bpmn2:incoming>
-      <bpmn2:outgoing>_B4482F61-E25A-4DD9-9E45-B8A637098CBC</bpmn2:outgoing>
       <bpmn2:outgoing>_EE670E46-7657-4C07-824D-E973F5966BDF</bpmn2:outgoing>
+      <bpmn2:outgoing>_B4482F61-E25A-4DD9-9E45-B8A637098CBC</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:endEvent id="_F4595A6B-C0CA-4DF7-A220-5B01E8864C01">
       <bpmn2:incoming>_DEAFFBB0-FD0D-4DE6-A8E0-AA57B9BEAFEA</bpmn2:incoming>
@@ -285,8 +286,8 @@ drinkOrder.setOrderStatus(orderStatus);
     </bpmn2:scriptTask>
     <bpmn2:exclusiveGateway id="_C6DB543F-386F-4AB6-A2B7-AFF3A725442B" drools:dg="_DEAFFBB0-FD0D-4DE6-A8E0-AA57B9BEAFEA" gatewayDirection="Diverging" default="_DEAFFBB0-FD0D-4DE6-A8E0-AA57B9BEAFEA">
       <bpmn2:incoming>_4D7E36D6-9A32-4109-A4F4-7841B6C1D260</bpmn2:incoming>
-      <bpmn2:outgoing>_F06CC2B0-BCC2-42CD-BB05-B3FF1E2B90F8</bpmn2:outgoing>
       <bpmn2:outgoing>_DEAFFBB0-FD0D-4DE6-A8E0-AA57B9BEAFEA</bpmn2:outgoing>
+      <bpmn2:outgoing>_F06CC2B0-BCC2-42CD-BB05-B3FF1E2B90F8</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:scriptTask id="_2B212F56-B150-4BA7-B2E6-173919E50E4C" name="Set OrderStatus Payment" scriptFormat="http://www.java.com/java">
       <bpmn2:extensionElements>
@@ -349,8 +350,8 @@ drinkOrder.setOrderStatus(orderStatus);</bpmn2:script>
     </bpmn2:userTask>
     <bpmn2:exclusiveGateway id="_C602F484-F9B0-43B2-B421-BD92A978A6C3" drools:dg="_D44A5F29-F1E2-4C45-9CB2-A95DCB406078" gatewayDirection="Diverging" default="_D44A5F29-F1E2-4C45-9CB2-A95DCB406078">
       <bpmn2:incoming>_7C1F7792-6592-4996-AA29-243E4E0C83A8</bpmn2:incoming>
-      <bpmn2:outgoing>_88C363CC-C1D6-46B5-AA89-711022F1272B</bpmn2:outgoing>
       <bpmn2:outgoing>_D44A5F29-F1E2-4C45-9CB2-A95DCB406078</bpmn2:outgoing>
+      <bpmn2:outgoing>_88C363CC-C1D6-46B5-AA89-711022F1272B</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:serviceTask id="_AFDC49E1-6F91-40ED-AF07-0011851D3F01" drools:serviceimplementation="Java" drools:serviceinterface="com.shop.service.PaymentService" drools:serviceoperation="processCard" name="Service CardPayment" implementation="Java" operationRef="_AFDC49E1-6F91-40ED-AF07-0011851D3F01_ServiceOperation">
       <bpmn2:extensionElements>
@@ -529,13 +530,13 @@ drinkOrder.setOrderStatus(orderStatus);
         <di:waypoint x="839" y="279"/>
         <di:waypoint x="961" y="279"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__C602F484-F9B0-43B2-B421-BD92A978A6C3_to_shape__A6B49E14-E5B1-403E-BC5A-541DC15A75B3" bpmnElement="_88C363CC-C1D6-46B5-AA89-711022F1272B">
-        <di:waypoint x="547.6666666666665" y="279"/>
-        <di:waypoint x="548" y="149"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__C602F484-F9B0-43B2-B421-BD92A978A6C3_to_shape__2B212F56-B150-4BA7-B2E6-173919E50E4C" bpmnElement="_D44A5F29-F1E2-4C45-9CB2-A95DCB406078">
         <di:waypoint x="547.6666666666665" y="279"/>
         <di:waypoint x="548.3333333333333" y="399"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__C602F484-F9B0-43B2-B421-BD92A978A6C3_to_shape__A6B49E14-E5B1-403E-BC5A-541DC15A75B3" bpmnElement="_88C363CC-C1D6-46B5-AA89-711022F1272B">
+        <di:waypoint x="547.6666666666665" y="279"/>
+        <di:waypoint x="548" y="149"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__2B212F56-B150-4BA7-B2E6-173919E50E4C_to_shape__BD6210E3-F7CB-4734-9A5A-8D4CD8B2B104" bpmnElement="_FAB2F174-6740-4102-9B8E-EBB376BB0634">
         <di:waypoint x="548.3333333333333" y="450"/>
@@ -545,13 +546,13 @@ drinkOrder.setOrderStatus(orderStatus);
         <di:waypoint x="1009" y="450"/>
         <di:waypoint x="1112" y="450"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__C6DB543F-386F-4AB6-A2B7-AFF3A725442B_to_shape__26415C2C-F04D-4114-A6A4-A4F4AB4541B1" bpmnElement="_F06CC2B0-BCC2-42CD-BB05-B3FF1E2B90F8">
-        <di:waypoint x="1017" y="279"/>
-        <di:waypoint x="1112.4545454545455" y="279"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__C6DB543F-386F-4AB6-A2B7-AFF3A725442B_to_shape__F4595A6B-C0CA-4DF7-A220-5B01E8864C01" bpmnElement="_DEAFFBB0-FD0D-4DE6-A8E0-AA57B9BEAFEA">
         <di:waypoint x="989" y="279"/>
         <di:waypoint x="989" y="184"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__C6DB543F-386F-4AB6-A2B7-AFF3A725442B_to_shape__26415C2C-F04D-4114-A6A4-A4F4AB4541B1" bpmnElement="_F06CC2B0-BCC2-42CD-BB05-B3FF1E2B90F8">
+        <di:waypoint x="1017" y="279"/>
+        <di:waypoint x="1112.4545454545455" y="279"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__26415C2C-F04D-4114-A6A4-A4F4AB4541B1_to_shape__0520EFFB-3C7E-4655-A677-D2257521A084" bpmnElement="_AEFE3E97-C826-4955-9D0E-A6034C1765E4">
         <di:waypoint x="1140.4545454545455" y="279"/>
@@ -561,13 +562,13 @@ drinkOrder.setOrderStatus(orderStatus);
         <di:waypoint x="1327" y="279"/>
         <di:waypoint x="1554" y="279"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__E226D332-7F64-4996-9A76-9EB46EEBA701_to_shape__E1C783AC-C9A5-4F2E-9FAE-2F2C16EC4DB9" bpmnElement="_B4482F61-E25A-4DD9-9E45-B8A637098CBC">
-        <di:waypoint x="1140" y="450"/>
-        <di:waypoint x="1140.4545454545455" y="539.4545454545457"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__E226D332-7F64-4996-9A76-9EB46EEBA701_to_shape__26415C2C-F04D-4114-A6A4-A4F4AB4541B1" bpmnElement="_EE670E46-7657-4C07-824D-E973F5966BDF">
         <di:waypoint x="1140" y="450"/>
         <di:waypoint x="1140.4545454545455" y="307"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__E226D332-7F64-4996-9A76-9EB46EEBA701_to_shape__E1C783AC-C9A5-4F2E-9FAE-2F2C16EC4DB9" bpmnElement="_B4482F61-E25A-4DD9-9E45-B8A637098CBC">
+        <di:waypoint x="1140" y="450"/>
+        <di:waypoint x="1140.4545454545455" y="539.4545454545457"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__A6B49E14-E5B1-403E-BC5A-541DC15A75B3_to_shape__221121AC-7AE0-4A7C-BE9D-9C1FE2E5C6A6" bpmnElement="_04571EDB-E776-46F0-8397-0017005896FC">
         <di:waypoint x="625" y="98"/>
@@ -722,7 +723,7 @@ drinkOrder.setOrderStatus(orderStatus);
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_e4y5UFoPED6_-q40xzJrRw</bpmn2:source>
-    <bpmn2:target>_e4y5UFoPED6_-q40xzJrRw</bpmn2:target>
+    <bpmn2:source>_uGdLoF4HED6GmMktfmu7IQ</bpmn2:source>
+    <bpmn2:target>_uGdLoF4HED6GmMktfmu7IQ</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
