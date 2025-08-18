@@ -252,7 +252,7 @@
                 <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
         </profile>
-        <!-- <profile>
+        <profile>
             <id>dev</id>
             <properties>
                 <quarkus.profile>dev</quarkus.profile>
@@ -263,6 +263,6 @@
                 <artifactId>bamoe-quarkus-devui</artifactId>
                 </dependency>        
             </dependencies>
-        </profile> -->
+        </profile>
     </profiles>
 </project>
