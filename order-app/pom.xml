@@ -4,9 +4,9 @@
     
     <parent>
         <groupId>com.shop.bamoe</groupId>
-        <artifactId>bamoe-base</artifactId>
+        <artifactId>kogito-quarkus</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../bamoe-base</relativePath>
+        <relativePath>../kogito-quarkus</relativePath>
     </parent>
     
     <groupId>com.shop.order</groupId>
