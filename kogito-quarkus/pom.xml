@@ -258,10 +258,10 @@
                 <quarkus.profile>dev</quarkus.profile>
             </properties>
             <dependencies>
-                <dependency>
+            <dependency>
                 <groupId>com.ibm.bamoe</groupId>
                 <artifactId>bamoe-quarkus-devui</artifactId>
-                </dependency>
+            </dependency>
             </dependencies>
         </profile>
     </profiles>
