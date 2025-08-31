@@ -1,0 +1,32 @@
+# Use compatible base image
+FROM eclipse-temurin:17-jre
+
+# Set working directory
+WORKDIR /app
+
+# Create a non-root user (Debian-based)
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Copy the JAR file with more specific naming
+COPY target/artifact-manager-api-*.jar app.jar
+
+# Change ownership to non-root user
+RUN chown appuser:appuser /app/app.jar
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
+EXPOSE 8080
+
+# Optimized JVM options for containerized environments
+ENV JAVA_OPTS="-Xmx512m -Xms256m \
+  -XX:+UseG1GC \
+  -XX:+UseContainerSupport \
+  -XX:MaxRAMPercentage=80.0 \
+  -XX:+OptimizeStringConcat \
+  -XX:+UseStringDeduplication \
+  -Djava.security.egd=file:/dev/./urandom"
+
+# Use exec form for better signal handling
+ENTRYPOINT exec java $JAVA_OPTS -jar app.jar
