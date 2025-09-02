@@ -1,4 +1,4 @@
-# Artifact Manager API
+# BAMOE Client API
 
 This project uses Spring Boot 3.5.3 with OAuth2 authentication (Keycloak/Azure Entra ID) for enterprise-grade API security.
 
@@ -152,7 +152,7 @@ For detailed setup and configuration information, see the `docs/` directory:
 ./mvnw clean package
 
 # Build Docker image
-docker build -f src/main/docker/Dockerfile.jvm -t artifact-manager-api .
+docker build -f src/main/docker/Dockerfile.jvm -t bamoe-client-api .
 ```
 
 

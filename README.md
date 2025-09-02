@@ -1,4 +1,4 @@
-# Artifact Manager Process
+# BAMOE Process
 
 This project uses Quarkus, a Kubernetes Native Java framework, and Kogito for process automation.
 
@@ -21,8 +21,8 @@ Create a `.env` file in the project root with the following variables:
 # Database configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=artifact-kogito
-DB_USER=kogito-user
+DB_NAME=kogito
+DB_USER=kogito
 DB_PASSWORD=Ch@ngeme
 
 # Maven Repository configuration

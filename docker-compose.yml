@@ -1,0 +1,224 @@
+name: bamoe-infra
+
+services:
+  # BAMOE Maven Repository
+  # BAMOE Maven Repository
+  bamoe-maven-repo:
+    image: quay.io/bamoe/maven-repository:9.2.1-ibm-0005
+    container_name: bamoe-maven-repo
+    ports:
+      - "${MAVEN_REPO_PORT}:8080"
+    networks:
+      - kogito-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    # Default profile - runs without specifying profile
+
+  # PostgreSQL Database
+  kogito-postgres:
+    image: postgres:17-alpine
+    container_name: kogito-postgres
+    environment:
+      POSTGRES_USER: kogito
+      POSTGRES_PASSWORD: Ch@ngeme
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+    networks:
+      - kogito-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kogito -d brew-app-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Default profile - runs without specifying profile
+
+  # Apache Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: kafka-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+    - "${ZOOKEEPER_PORT:-2181}:2181"
+    networks:
+      - kogito-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-broker
+    depends_on:
+      - zookeeper
+    ports:
+    - "${KAFKA_PORT:-9092}:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - kogito-network
+
+  # Keycloak IdP
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: kogito-keycloak
+    command: ["start-dev"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin123}
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: ${KEYCLOAK_PORT:-8080}
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+    ports:
+      - "${KEYCLOAK_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    networks:
+      - kogito-network
+    profiles: ["container"]
+
+  # Brew Application Service
+  brew-app:
+    build:
+      context: ./brew-app
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: brew-app
+    image: brew-app:latest
+    ports:
+      - "${BREW_APP_PORT:-8080}:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+      KOGITO_JOBS-SERVICE_URL: http://host.docker.internal:${BREW_APP_PORT}/
+      KOGITO_INDEX-SERVICE_URL: http://host.docker.internal:${BREW_APP_PORT}/
+      KOGITO_SERVICE_URL: http://host.docker.internal:${BREW_APP_PORT}/
+
+      DB_HOST: kogito-postgres
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${BREW_APP_DB_NAME:-kogito}
+      DB_USER: ${DB_USER:-kogito}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeme}
+
+      OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/bamoe-realm
+      OIDC_CLIENT_ID: ${BREW_APP_OIDC_CLIENT_ID:-brew-app-client-id}
+      OIDC_CLIENT_SECRET: ${BREW_APP_OIDC_CLIENT_SECRET:-brew-app-secret}
+    depends_on:
+      - kafka
+      - postgres
+    networks:
+      - kogito-network
+    profiles: ["container"]
+
+  # Order Application Service
+  order-app:
+    build:
+      context: ./order-app
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: order-app
+    image: order-app:latest
+    ports:
+      - "${ORDER_APP_PORT:-8080}:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+      KOGITO_JOBS-SERVICE_URL: http://host.docker.internal:${ORDER_APP_PORT}/
+      KOGITO_INDEX-SERVICE_URL: http://host.docker.internal:${ORDER_APP_PORT}/
+      KOGITO_SERVICE_URL: http://host.docker.internal:${ORDER_APP_PORT}/
+
+      DB_HOST: kogito-postgres
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${ORDER_APP_DB_NAME:-kogito}
+      DB_USER: ${DB_USER:-kogito}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeme}
+
+      OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/bamoe-realm
+      OIDC_CLIENT_ID: ${BREW_APP_OIDC_CLIENT_ID:-order-app-client-id}
+      OIDC_CLIENT_SECRET: ${BREW_APP_OIDC_CLIENT_SECRET:-order-app-secret}
+    depends_on:
+      - kafka
+      - postgres
+    networks:
+      - kogito-network
+    profiles: ["container"]
+
+  #BAMOE Client API Service
+  bamoe-client-api:
+    build:
+      context: .
+      dockerfile: src/main/docker/Dockerfile.jvm
+    image: artifact-management-api:latest
+    container_name: bamoe-client-api
+    ports:
+      - "8080:8080"
+    environment:
+      # KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-kogito}
+      DB_USER: ${DB_USER:-kogito}
+      DB_PASSWORD: ${DB_PASSWORD:-kogito}
+    depends_on:
+      # - kafka
+      - kogito-postgres
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ssot-network
+    profiles: ["in-progess"]
+
+  # Process management console
+  management-console:
+    container_name: management-console
+    image: quay.io/bamoe/management-console:9.2.1-ibm-0005
+    ports:
+      - ${MANAGEMENT_CONSOLE_PORT:-8080}:8080
+    environment:
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_CLIENT_ID: management-console
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/bamoe-realm
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_SCOPE: openid profile email
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_APPLICATION_TYPE: web-app
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_REDIRECT_URI: http://host.docker.internal:8080/
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_LOGOUT_REDIRECT_URI: http://host.docker.internal:8080/
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_MANAGED_BUSINESS_SERVICES: '[{"name":"Order App","businessServiceUrl":"http://host.docker.internal:8082","authToken":{"oidc":{"clientId":"${ORDER_APP_OIDC_CLIENT_ID}","clientSecret":"${ORDER_APP_OIDC_CLIENT_SECRET}","authServerUrl":"http://keycloak:8080/realms/bamoe-realm"}}}]'
+    # depends_on:
+    #   - keycloak  # Keycloak service not defined yet
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kogito-network
+    profiles: ["container"]
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  kogito-network:
+    name: kogito-network
+    driver: bridge
