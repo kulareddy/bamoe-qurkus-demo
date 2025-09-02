@@ -1,8 +1,8 @@
 {
-  "id": "artifact-realm",
-  "realm": "artifact-realm",
-  "displayName": "Artifact Manager Realm",
-  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Artifact Manager</span></div>",
+  "id": "coffee-shop-realm",
+  "realm": "coffee-shop-realm",
+  "displayName": "Coffee Shop Realm",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Coffee Shop</span></div>",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -46,12 +46,12 @@
   "maxDeltaTimeSeconds": 43200,
   "failureFactor": 30,
   "defaultRole": {
-    "id": "default-roles-artifact-realm",
-    "name": "default-roles-artifact-realm",
+    "id": "default-roles-coffee-shop-realm",
+    "name": "default-roles-coffee-shop-realm",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
-    "containerId": "artifact-realm"
+    "containerId": "coffee-shop-realm"
   },
   "requiredCredentials": [
     "password"

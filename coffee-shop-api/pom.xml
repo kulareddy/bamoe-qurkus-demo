@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.cvshealth.pbm.ssot</groupId>
-    <artifactId>bamoe-client-api</artifactId>
+    <artifactId>coffee-shop-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>bamoe-client-api</name>
+    <name>coffee-shop-api</name>
     <description>Spring Boot API with RESTful services, JPA, Hibernate, and comprehensive testing</description>
 
     <properties>

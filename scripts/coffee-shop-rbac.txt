@@ -1,0 +1,39 @@
+# RBAC Configuration for Coffe Shop
+# Format: type:name[:assignment]
+
+# Cleanup - Remove all existing roles, groups, and users from realm
+cleanup:all
+
+# Clients - OAuth2/OIDC clients for applications
+# Format: client:clientId:clientSecret:description
+client:coffee-shop-api:coffee-shop-secret:Spring Boot API Application
+client:brew-app-client-id:coffee-shop-secret:Brew Process Quarkus Application
+client:order-app-client-id:coffee-shop-secret:Order Process Quarkus Application
+client:management-console:public:Frontend Console Application
+
+# Roles
+role:admin
+role:maneger
+role:cashier
+role:barista
+
+# Service Account Roles (for client_credentials flow)
+# Format: service-account-role:clientId:role
+#service-account-role:order-app:manager
+
+# Groups and their assigned roles
+group:Admins:admin
+group:Manager:manager
+group:Cashier:cashier
+group:Barista:barista
+
+# Users and their details
+# Format: user:username:email:firstName:lastName:password:group
+user:admin:admin@local.com:Admin:User:admin123:Admins
+user:manager1:manager1@local.com:Manager:One:manager123:Manager
+user:manager2:manager2@local.com:Manager:Two:manager123:Manager
+user:cashier1:cashier1@local.com:Cashier:One:cashier123:Cashier
+user:cashier2:cashier2@local.com:Cashier:Two:cashier123:Cashier
+user:barista1:barista1@local.com:Barista:One:barista123:Barista
+user:barista2:barista2@local.com:Barista:Two:barista123:Barista
+

@@ -8,10 +8,10 @@
 # set -e
 
 KEYCLOAK_URL="http://localhost:9180"
-REALM_NAME="artifact-realm"
+REALM_NAME="coffee-shop-realm"
 ADMIN_USER="admin"
 ADMIN_PASSWORD="admin123"
-RBAC_FILE="artifact-rbac.txt"
+RBAC_FILE="coffee-shop-rbac.txt"
 
 # Function to find RBAC file
 find_rbac_file() {
@@ -51,7 +51,7 @@ show_usage() {
     echo ""
     echo "Commands:"
     echo "  wait              - Wait for Keycloak to be ready"
-    echo "  setup             - Setup RBAC from artifact-rbac.txt file"
+    echo "  setup             - Setup RBAC from coffee-shop-rbac.txt file"
     echo "  check-clients     - Check for missing clients and recreate them"
     echo "  token [user] [pw] [client] - Get access token for testing"
     echo "  info              - Show Keycloak connection information"
@@ -74,9 +74,10 @@ show_info() {
     echo "Admin Password: admin123"
     echo "Realm: ${REALM_NAME}"
     echo "Clients:"
-    echo "  - artifact-manager-api (Spring Boot API - Confidential)"
-    echo "  - artifact-manager-process (Quarkus Process - Confidential)"
-    echo "  - artifact-management-console (Frontend Console - Public)"
+    echo "  - coffee-shop-api (Spring Boot API - Confidential)"
+    echo "  - order-app (Quarkus Process - Confidential)"
+    echo "  - brew-app (Quarkus Process - Confidential)"
+    echo "  - management-console (Frontend Console - Public)"
     echo ""
     echo "Token Endpoint:"
     echo "${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/token"
@@ -84,15 +85,15 @@ show_info() {
     echo -e "${YELLOW}Quick Token Examples:${NC}"
     echo "# Spring Boot API client tokens:"
     echo "./setup-rbac.sh token admin admin123"
-    echo "./setup-rbac.sh token owner1 owner123"
+    echo "./setup-rbac.sh token manager1 manager123"
     echo ""
     echo "# Quarkus Process client tokens:"
     echo "./setup-rbac.sh token admin admin123 process"
-    echo "./setup-rbac.sh token owner1 owner123 process"
+    echo "./setup-rbac.sh token cashier1 cashier123 process"
     echo ""
     echo "# Frontend Console (Public Client - requires Authorization Code Flow):"
     echo "Authorization URL: ${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/auth"
-    echo "Client ID: artifact-management-console (no secret required)"
+    echo "Client ID: management-console (no secret required)"
 }
 
 # Function to get test token
@@ -102,12 +103,12 @@ get_test_token() {
     local client_type=${3:-"api"}
     
     # Set client ID and default values
-    local client_id="artifact-manager-api"
-    local client_secret=""
+    local client_id="coffee-shop-api"
+    local client_secret="coffee-shop-secret"
     local app_name="Spring Boot API"
     
     if [ "$client_type" = "process" ]; then
-        client_id="artifact-manager-process"
+        client_id="order-app-client-id"
         app_name="Quarkus Process"
     fi
     
@@ -119,7 +120,7 @@ get_test_token() {
     
     # Fallback to hardcoded values if not found in file
     if [ -z "$client_secret" ]; then
-        client_secret="artifact-manager-secret"
+        client_secret="coffee-shop-secret"
         echo -e "${YELLOW}⚠️  Client secret not found in RBAC file, using fallback${NC}"
     fi
     
@@ -440,7 +441,7 @@ check_and_restore_clients() {
         -H "Authorization: Bearer $token" | jq -r '.[].clientId')
     
     # Define expected clients
-    local expected_clients=("artifact-manager-api" "artifact-manager-process" "artifact-management-console")
+    local expected_clients=("coffee-shop-api" "brew-app-client-id" "order-app-client-id" "management-console")
     local missing_clients=()
     
     # Check which clients are missing

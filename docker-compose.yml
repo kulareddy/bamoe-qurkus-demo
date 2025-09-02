@@ -94,7 +94,6 @@ services:
       start_period: 90s
     networks:
       - kogito-network
-    profiles: ["container"]
 
   # Brew Application Service
   brew-app:
@@ -118,12 +117,12 @@ services:
       DB_USER: ${DB_USER:-kogito}
       DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeme}
 
-      OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/bamoe-realm
+      OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/coffee-shop-realm
       OIDC_CLIENT_ID: ${BREW_APP_OIDC_CLIENT_ID:-brew-app-client-id}
       OIDC_CLIENT_SECRET: ${BREW_APP_OIDC_CLIENT_SECRET:-brew-app-secret}
     depends_on:
       - kafka
-      - postgres
+      - kogito-postgres
     networks:
       - kogito-network
     profiles: ["container"]
@@ -150,23 +149,23 @@ services:
       DB_USER: ${DB_USER:-kogito}
       DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeme}
 
-      OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/bamoe-realm
+      OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/coffee-shop-realm
       OIDC_CLIENT_ID: ${BREW_APP_OIDC_CLIENT_ID:-order-app-client-id}
       OIDC_CLIENT_SECRET: ${BREW_APP_OIDC_CLIENT_SECRET:-order-app-secret}
     depends_on:
       - kafka
-      - postgres
+      - kogito-postgres
     networks:
       - kogito-network
     profiles: ["container"]
 
   #BAMOE Client API Service
-  bamoe-client-api:
+  coffee-shop-api:
     build:
-      context: .
+      context: ./coffee-shop-api
       dockerfile: src/main/docker/Dockerfile.jvm
-    image: artifact-management-api:latest
-    container_name: bamoe-client-api
+    image: coffee-shop-api:latest
+    container_name: coffee-shop-api
     ports:
       - "8080:8080"
     environment:
@@ -197,12 +196,12 @@ services:
       - ${MANAGEMENT_CONSOLE_PORT:-8080}:8080
     environment:
       RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_CLIENT_ID: management-console
-      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/bamoe-realm
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/coffee-shop-realm
       RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_SCOPE: openid profile email
       RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_APPLICATION_TYPE: web-app
       RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_REDIRECT_URI: http://host.docker.internal:8080/
       RUNTIME_TOOLS_MANAGEMENT_CONSOLE_OIDC_LOGOUT_REDIRECT_URI: http://host.docker.internal:8080/
-      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_MANAGED_BUSINESS_SERVICES: '[{"name":"Order App","businessServiceUrl":"http://host.docker.internal:8082","authToken":{"oidc":{"clientId":"${ORDER_APP_OIDC_CLIENT_ID}","clientSecret":"${ORDER_APP_OIDC_CLIENT_SECRET}","authServerUrl":"http://keycloak:8080/realms/bamoe-realm"}}}]'
+      RUNTIME_TOOLS_MANAGEMENT_CONSOLE_MANAGED_BUSINESS_SERVICES: '[{"name":"Order App","businessServiceUrl":"http://host.docker.internal:8082","authToken":{"oidc":{"clientId":"${ORDER_APP_OIDC_CLIENT_ID}","clientSecret":"${ORDER_APP_OIDC_CLIENT_SECRET}","authServerUrl":"http://keycloak:8080/realms/coffee-shop-realm","scope":"openid profile email","applicationType":"service"}}}}]'
     # depends_on:
     #   - keycloak  # Keycloak service not defined yet
     healthcheck:

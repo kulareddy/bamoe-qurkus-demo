@@ -1,8 +1,8 @@
 {
-  "id": "artifact-realm",
-  "realm": "artifact-realm",
-  "displayName": "Artifact Manager Realm",
-  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Artifact Manager</span></div>",
+  "id": "bamoe-realm",
+  "realm": "bamoe-realm",
+  "displayName": "BAMOE Realm",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>BAMOE</span></div>",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -46,12 +46,12 @@
   "maxDeltaTimeSeconds": 43200,
   "failureFactor": 30,
   "defaultRole": {
-    "id": "default-roles-artifact-realm",
-    "name": "default-roles-artifact-realm",
+    "id": "default-roles-bamoe-realm",
+    "name": "default-roles-bamoe-realm",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
-    "containerId": "artifact-realm"
+    "containerId": "bamoe-realm"
   },
   "requiredCredentials": [
     "password"
