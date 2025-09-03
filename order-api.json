@@ -1,0 +1,22 @@
+{
+    "specversion": "1.0",
+    "id": "order-12345-drink-event",
+    "source": "/order-service/api/v1",
+    "type": "make-drink",
+    "time": "2025-09-03T20:15:30.123Z",
+    "datacontenttype": "application/json",
+    "data": {
+        "orderId": "12345",
+        "drinkType": "CAPPUCCINO",
+        "drinkSize": "LARGE",
+        "orderStatus": "INPROGRESS",
+        "cardPayment": {
+            "cardNumber": "4532123456789012",
+            "expDate": "12/2026",
+            "nameOnCard": "Jane Smith",
+            "amount": 5.99,
+            "cardType": "VISA"
+        },
+        "paymentType": "CARD"
+    }
+}

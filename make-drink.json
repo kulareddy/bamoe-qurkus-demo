@@ -1,0 +1,26 @@
+{
+    "specversion": "1.0",
+    "id": "c522a006-ed76-4681-ac53-de80129f9f0c",
+    "source": "/process/OrderDrink",
+    "type": "make-drink",
+    "time": "2025-09-03T15:05:57.510029-05:00",
+    "kogitoproctype": "BPMN",
+    "kogitoprocinstanceid": "5b4afab7-5179-4a11-afb6-80945ea79c3a",
+    "kogitoprocist": "Active",
+    "kogitoprocversion": "1.0",
+    "kogitoprocid": "OrderDrink",
+    "data": {
+        "orderId": "5b4afab7-5179-4a11-afb6-80945ea79c3a",
+        "drinkType": "LATTE",
+        "drinkSize": "MEDIUM",
+        "orderStatus": "INPROGRESS",
+        "cardPayment": {
+            "cardNumber": "1111222233334444",
+            "expDate": "12/2030",
+            "nameOnCard": "J Doe",
+            "amount": 10.99,
+            "cardType": "VISA"
+        },
+        "paymentType": "CARD"
+    }
+}

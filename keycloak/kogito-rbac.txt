@@ -13,7 +13,7 @@ client:management-console:public:Frontend Console Application
 
 # Roles
 role:admin
-role:maneger
+role:manager
 role:cashier
 role:barista
 

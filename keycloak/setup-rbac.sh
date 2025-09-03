@@ -11,7 +11,7 @@ KEYCLOAK_URL="http://localhost:9180"
 REALM_NAME="coffee-shop-realm"
 ADMIN_USER="admin"
 ADMIN_PASSWORD="admin123"
-RBAC_FILE="coffee-shop-rbac.txt"
+RBAC_FILE="kogito-rbac.txt"
 
 # Function to find RBAC file
 find_rbac_file() {
@@ -20,16 +20,22 @@ find_rbac_file() {
         echo "$RBAC_FILE"
         return 0
     fi
-    # Check scripts directory
+    # Check keycloak directory (for when running from project root)
+    if [ -f "keycloak/$RBAC_FILE" ]; then
+        echo "keycloak/$RBAC_FILE"
+        return 0
+    fi
+    # Check scripts directory (legacy location)
     if [ -f "scripts/$RBAC_FILE" ]; then
         echo "scripts/$RBAC_FILE"
         return 0
     fi
-    # Check if we're in scripts directory
+    # Check if we're in scripts or keycloak directory, look in parent
     if [ -f "../$RBAC_FILE" ]; then
         echo "../$RBAC_FILE"
         return 0
     fi
+    echo -e "${RED}❌ RBAC file '$RBAC_FILE' not found in current directory, keycloak/, scripts/, or parent directory!${NC}" >&2
     return 1
 }
 
@@ -51,7 +57,7 @@ show_usage() {
     echo ""
     echo "Commands:"
     echo "  wait              - Wait for Keycloak to be ready"
-    echo "  setup             - Setup RBAC from coffee-shop-rbac.txt file"
+    echo "  setup             - Setup RBAC from kogito-rbac.txt file"
     echo "  check-clients     - Check for missing clients and recreate them"
     echo "  token [user] [pw] [client] - Get access token for testing"
     echo "  info              - Show Keycloak connection information"
@@ -153,7 +159,7 @@ get_test_token() {
 # Check if RBAC file exists
 RBAC_FILE_PATH=$(find_rbac_file)
 if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ RBAC file '$RBAC_FILE' not found in current directory, scripts/, or parent directory!${NC}"
+    echo -e "${RED}❌ RBAC file '$RBAC_FILE' not found in current directory, keycloak/, scripts/, or parent directory!${NC}"
     exit 1
 fi
 
@@ -288,6 +294,15 @@ create_role() {
     
     echo -e "${BLUE}📋 Creating role: $role_name${NC}"
     
+    # Check if role already exists
+    local existing_role=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/roles/$role_name" \
+        -H "Authorization: Bearer $token" 2>/dev/null | jq -r '.name // empty')
+    
+    if [ "$existing_role" = "$role_name" ]; then
+        echo -e "${GREEN}✅ Role $role_name already exists, skipping creation${NC}"
+        return 0
+    fi
+    
     local response=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/roles" \
         -H "Authorization: Bearer $token" \
         -H "Content-Type: application/json" \
@@ -309,6 +324,15 @@ create_client() {
     local description=$4
     
     echo -e "${BLUE}🔧 Creating client: $client_id${NC}"
+    
+    # Check if client already exists
+    local existing_client=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/clients" \
+        -H "Authorization: Bearer $token" | jq -r ".[] | select(.clientId==\"$client_id\") | .clientId")
+    
+    if [ "$existing_client" = "$client_id" ]; then
+        echo -e "${GREEN}✅ Client $client_id already exists, skipping creation${NC}"
+        return 0
+    fi
     
     # Determine if this is a public client (frontend/SPA) or confidential client (backend service)
     local is_public_client="false"
@@ -397,37 +421,56 @@ create_group() {
     
     echo -e "${BLUE}👥 Creating group: $group_name with role: $role_name${NC}"
     
-    # Create group
-    local response=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups" \
-        -H "Authorization: Bearer $token" \
-        -H "Content-Type: application/json" \
-        -d "{\"name\":\"$group_name\"}")
+    # Check if group already exists
+    local existing_group=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups?search=$group_name" \
+        -H "Authorization: Bearer $token" | jq -r ".[0].name // empty")
     
-    # Wait a bit for group creation
-    sleep 1
-    
-    # Get group ID
-    local group_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups?search=$group_name" \
-        -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    local group_id
+    if [ "$existing_group" = "$group_name" ]; then
+        echo -e "${GREEN}✅ Group $group_name already exists${NC}"
+        group_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups?search=$group_name" \
+            -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    else
+        # Create group
+        local response=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"$group_name\"}")
+        
+        # Wait a bit for group creation
+        sleep 1
+        
+        # Get group ID
+        group_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups?search=$group_name" \
+            -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    fi
     
     # Get role details to assign
     local role_data=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/roles/$role_name" \
         -H "Authorization: Bearer $token")
     
-    # Assign role to group
-    if [ "$group_id" != "null" ] && [ "$group_id" != "" ]; then
-        local assign_response=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups/$group_id/role-mappings/realm" \
-            -H "Authorization: Bearer $token" \
-            -H "Content-Type: application/json" \
-            -d "[$role_data]")
-        
-        if [[ "$assign_response" == *"error"* ]]; then
-            echo -e "${YELLOW}⚠️  Failed to assign role $role_name to group $group_name${NC}"
-        else
-            echo -e "${GREEN}✅ Group $group_name created and assigned role $role_name${NC}"
-        fi
+    # Check if role is already assigned to group
+    local existing_role=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups/$group_id/role-mappings/realm" \
+        -H "Authorization: Bearer $token" | jq -r ".[] | select(.name==\"$role_name\") | .name")
+    
+    if [ "$existing_role" = "$role_name" ]; then
+        echo -e "${GREEN}✅ Role $role_name already assigned to group $group_name${NC}"
     else
-        echo -e "${RED}❌ Failed to get group ID for $group_name${NC}"
+        # Assign role to group
+        if [ "$group_id" != "null" ] && [ "$group_id" != "" ]; then
+            local assign_response=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups/$group_id/role-mappings/realm" \
+                -H "Authorization: Bearer $token" \
+                -H "Content-Type: application/json" \
+                -d "[$role_data]")
+            
+            if [[ "$assign_response" == *"error"* ]]; then
+                echo -e "${YELLOW}⚠️  Failed to assign role $role_name to group $group_name${NC}"
+            else
+                echo -e "${GREEN}✅ Group $group_name created and assigned role $role_name${NC}"
+            fi
+        else
+            echo -e "${RED}❌ Failed to get group ID for $group_name${NC}"
+        fi
     fi
 }
 
@@ -508,25 +551,36 @@ create_user() {
     
     echo -e "${BLUE}👤 Creating user: $username ($first_name $last_name) in group: $group_name${NC}"
     
-    # Create user
-    curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users" \
-        -H "Authorization: Bearer $token" \
-        -H "Content-Type: application/json" \
-        -d "{
-            \"username\":\"$username\",
-            \"email\":\"$email\",
-            \"firstName\":\"$first_name\",
-            \"lastName\":\"$last_name\",
-            \"enabled\":true,
-            \"emailVerified\":true
-        }"
+    # Check if user already exists
+    local existing_user=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users?username=$username" \
+        -H "Authorization: Bearer $token" | jq -r ".[0].username // empty")
     
-    # Get user ID
-    local user_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users?username=$username" \
-        -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    local user_id
+    if [ "$existing_user" = "$username" ]; then
+        echo -e "${GREEN}✅ User $username already exists${NC}"
+        user_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users?username=$username" \
+            -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    else
+        # Create user
+        curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            -d "{
+                \"username\":\"$username\",
+                \"email\":\"$email\",
+                \"firstName\":\"$first_name\",
+                \"lastName\":\"$last_name\",
+                \"enabled\":true,
+                \"emailVerified\":true
+            }"
+        
+        # Get user ID
+        user_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users?username=$username" \
+            -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    fi
     
-    if [ "$user_id" != "null" ]; then
-        # Set password
+    if [ "$user_id" != "null" ] && [ "$user_id" != "" ]; then
+        # Set password (always update password in case it changed)
         curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users/$user_id/reset-password" \
             -H "Authorization: Bearer $token" \
             -H "Content-Type: application/json" \
@@ -536,9 +590,18 @@ create_user() {
         local group_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups?search=$group_name" \
             -H "Authorization: Bearer $token" | jq -r '.[0].id')
         
-        if [ "$group_id" != "null" ]; then
-            curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users/$user_id/groups/$group_id" \
-                -H "Authorization: Bearer $token"
+        if [ "$group_id" != "null" ] && [ "$group_id" != "" ]; then
+            # Check if user is already in the group
+            local user_groups=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users/$user_id/groups" \
+                -H "Authorization: Bearer $token" | jq -r ".[].name")
+            
+            if [[ "$user_groups" =~ $group_name ]]; then
+                echo -e "${GREEN}✅ User $username already in group $group_name${NC}"
+            else
+                curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users/$user_id/groups/$group_id" \
+                    -H "Authorization: Bearer $token"
+                echo -e "${GREEN}✅ User $username added to group $group_name${NC}"
+            fi
         fi
     fi
 }

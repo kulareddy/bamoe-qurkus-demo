@@ -25,14 +25,14 @@ docker compose ps
 
 ```bash
 # Wait for Keycloak to be ready and setup complete RBAC
-./scripts/setup-rbac.sh setup
+./keycloak/setup-rbac.sh setup
 ```
 
-This creates the complete RBAC structure from `scripts/coffee-shop-rbac.txt`
+This creates the complete RBAC structure from `keycloak/kogito-rbac.txt`
 
 ## 🔐 RBAC Configuration
 
-The application uses a comprehensive role-based access control system configured via `scripts/coffee-shop-rbac.txt`:
+The application uses a comprehensive role-based access control system configured via `keycloak/kogito-rbac.txt`:
 
 ### Roles & Permissions
 
@@ -47,18 +47,18 @@ The RBAC system creates the following groups with test users:
 
 ```bash
 # Setup/reset complete RBAC configuration
-./scripts/setup-rbac.sh setup
+./keycloak/setup-rbac.sh setup
 
 # Get access tokens for testing
-./scripts/setup-rbac.sh token admin admin123
-./scripts/setup-rbac.sh token cashier1 cashier123
-./scripts/setup-rbac.sh token barista1 barista123
+./keycloak/setup-rbac.sh token admin admin123
+./keycloak/setup-rbac.sh token cashier1 cashier123
+./keycloak/setup-rbac.sh token barista1 barista123
 
 # Wait for Keycloak to be ready
-./scripts/setup-rbac.sh wait
+./keycloak/setup-rbac.sh wait
 
 # Show connection information
-./scripts/setup-rbac.sh info
+./keycloak/setup-rbac.sh info
 ```
 
 ### RBAC Configuration File
@@ -152,7 +152,7 @@ spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://login.microsoftonl
 **Get Access Token:**
 ```bash
 # Get token for admin user
-./scripts/setup-rbac.sh token admin admin123
+./keycloak/setup-rbac.sh token admin admin123
 ```
 
 **Test API with Authentication:**
@@ -280,10 +280,10 @@ curl -X POST http://localhost:9180/realms/artifact-realm/protocol/openid-connect
 **Using Setup Script (Recommended):**
 ```bash
 # Get token for Spring Boot API
-./scripts/setup-rbac.sh token admin admin123
+./keycloak/setup-rbac.sh token admin admin123
 
 # Get token for Quarkus Process
-./scripts/setup-rbac.sh token admin admin123 process
+./keycloak/setup-rbac.sh token admin admin123 process
 ```
 
 **Frontend Console Authentication (Authorization Code + PKCE):**

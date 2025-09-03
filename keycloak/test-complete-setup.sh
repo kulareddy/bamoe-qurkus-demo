@@ -11,22 +11,22 @@ echo -e "${GREEN}🧪 Testing Complete OAuth2/RBAC Setup${NC}"
 echo "============================================"
 
 echo -e "\n${BLUE}1. Testing all three clients exist:${NC}"
-./scripts/setup-rbac.sh info
+./setup-rbac.sh info
 
 echo -e "\n${BLUE}2. Testing Spring Boot API client (admin user):${NC}"
-./scripts/setup-rbac.sh token admin admin123
+./setup-rbac.sh token admin admin123
 
 echo -e "\n${BLUE}3. Testing Quarkus Process client (admin user):${NC}"
-./scripts/setup-rbac.sh token admin admin123 process
+./setup-rbac.sh token admin admin123 process
 
 echo -e "\n${BLUE}4. Testing Spring Boot API client (owner user):${NC}"
-./scripts/setup-rbac.sh token owner1 owner123
+./setup-rbac.sh token owner1 owner123
 
 echo -e "\n${BLUE}5. Testing Quarkus Process client (owner user):${NC}"
-./scripts/setup-rbac.sh token owner1 owner123 process
+./setup-rbac.sh token owner1 owner123 process
 
 echo -e "\n${BLUE}6. Testing Spring Boot API client (member user):${NC}"
-./scripts/setup-rbac.sh token member1 member123
+./setup-rbac.sh token member1 member123
 
 echo -e "\n${BLUE}7. Testing Service-to-Service (Process → API) - Client Credentials:${NC}"
 echo "Getting client credentials token for process client..."
