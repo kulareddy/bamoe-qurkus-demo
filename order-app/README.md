@@ -21,7 +21,7 @@ Create a `.env` file in the project root with the following variables:
 # Database configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=kogito
+DB_NAME=order-app-db
 DB_USER=kogito
 DB_PASSWORD=Ch@ngeme
 
