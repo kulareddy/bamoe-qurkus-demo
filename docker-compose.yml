@@ -2,7 +2,6 @@ name: bamoe-infra
 
 services:
   # BAMOE Maven Repository
-  # BAMOE Maven Repository
   bamoe-maven-repo:
     image: quay.io/bamoe/maven-repository:9.2.1-ibm-0005
     container_name: bamoe-maven-repo
