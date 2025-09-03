@@ -1,0 +1,3830 @@
+{
+  "openapi" : "3.1.0",
+  "components" : {
+    "schemas" : {
+      "Attachment" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "content" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "updatedAt" : {
+            "$ref" : "#/components/schemas/Date"
+          },
+          "updatedBy" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AttachmentInfo" : {
+        "type" : "object",
+        "properties" : {
+          "uri" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CardPayment" : {
+        "type" : "object",
+        "properties" : {
+          "cardNumber" : {
+            "type" : "string"
+          },
+          "expDate" : {
+            "type" : "string"
+          },
+          "nameOnCard" : {
+            "type" : "string"
+          },
+          "amount" : {
+            "type" : "number"
+          },
+          "cardType" : {
+            "$ref" : "#/components/schemas/CardType"
+          }
+        }
+      },
+      "CardType" : {
+        "type" : "string",
+        "enum" : [ "VISA", "MASTER", "AMEX", "DISCOVER" ]
+      },
+      "Comment" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "content" : {
+            "type" : "string"
+          },
+          "updatedAt" : {
+            "$ref" : "#/components/schemas/Date"
+          },
+          "updatedBy" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CommentInfo" : {
+        "type" : "object",
+        "properties" : {
+          "comment" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ContentMode" : {
+        "type" : "string",
+        "enum" : [ "binary", "structured" ]
+      },
+      "CronSchedule" : {
+        "type" : "object",
+        "required" : [ "expression" ],
+        "description" : "Cron schedules establishes that a job must be executed with a periodicity based on a unix like crontab expression.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Schedule"
+        } ],
+        "properties" : {
+          "expression" : {
+            "type" : "string",
+            "description" : "Cron expression for the job execution, for more information <a href=\"https://en.wikipedia.org/wiki/Cron#Overview\" target=\"_blank\">see</a>."
+          },
+          "timeZone" : {
+            "type" : "string",
+            "description" : "Time zone for the cron programming, for example \"Europe/Madrid\". For more information <a href=\"https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\" target=\"_blank\">see</a>."
+          }
+        }
+      },
+      "Date" : {
+        "type" : "string",
+        "format" : "date",
+        "examples" : [ "2022-03-10" ]
+      },
+      "DrinkOrder" : {
+        "type" : "object",
+        "properties" : {
+          "orderId" : {
+            "type" : "string"
+          },
+          "drinkType" : {
+            "$ref" : "#/components/schemas/DrinkType"
+          },
+          "drinkSize" : {
+            "$ref" : "#/components/schemas/DrinkSize"
+          },
+          "orderStatus" : {
+            "$ref" : "#/components/schemas/OrderStatus"
+          },
+          "cardPayment" : {
+            "$ref" : "#/components/schemas/CardPayment"
+          },
+          "paymentType" : {
+            "$ref" : "#/components/schemas/PaymentType"
+          }
+        }
+      },
+      "DrinkSize" : {
+        "type" : "string",
+        "enum" : [ "SMALL", "MEDIUM", "LARGE" ]
+      },
+      "DrinkType" : {
+        "type" : "string",
+        "enum" : [ "COFFEE", "LATTE", "CAPPUCCINO" ]
+      },
+      "HttpRecipient" : {
+        "type" : "object",
+        "required" : [ "url", "method" ],
+        "description" : "Recipient definition that executes a http request on a given url and sends the configured \"payload\" as the body.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Recipient"
+        } ],
+        "properties" : {
+          "url" : {
+            "type" : "string",
+            "description" : "Url of the recipient that will receive the request."
+          },
+          "method" : {
+            "type" : "string",
+            "enum" : [ "POST", "GET", "HEAD", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+            "description" : "Http method to use for the request.",
+            "default" : "POST"
+          },
+          "headers" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "description" : "Http headers to send with the request."
+          },
+          "queryParams" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "description" : "Http query parameters to send with the request."
+          },
+          "payload" : {
+            "$ref" : "#/components/schemas/HttpRecipientPayloadData"
+          }
+        }
+      },
+      "HttpRecipientBinaryPayloadData" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/HttpRecipientPayloadData"
+        } ],
+        "properties" : {
+          "data" : {
+            "type" : "string",
+            "format" : "binary"
+          }
+        }
+      },
+      "HttpRecipientJsonPayloadData" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/HttpRecipientPayloadData"
+        } ],
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/JsonNode"
+          }
+        }
+      },
+      "HttpRecipientPayloadData" : {
+        "type" : "object",
+        "required" : [ "type" ],
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "binary" : "#/components/schemas/HttpRecipientBinaryPayloadData",
+            "string" : "#/components/schemas/HttpRecipientStringPayloadData",
+            "json" : "#/components/schemas/HttpRecipientJsonPayloadData"
+          }
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "HttpRecipientStringPayloadData" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/HttpRecipientPayloadData"
+        } ],
+        "properties" : {
+          "data" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Job" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "expirationTime" : {
+            "$ref" : "#/components/schemas/ZonedDateTime"
+          },
+          "priority" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "callbackEndpoint" : {
+            "type" : "string"
+          },
+          "processInstanceId" : {
+            "type" : "string"
+          },
+          "rootProcessInstanceId" : {
+            "type" : "string"
+          },
+          "processId" : {
+            "type" : "string"
+          },
+          "rootProcessId" : {
+            "type" : "string"
+          },
+          "nodeInstanceId" : {
+            "type" : "string"
+          },
+          "repeatInterval" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "repeatLimit" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "JobExecutionResponse" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "$ref" : "#/components/schemas/ZonedDateTime"
+          },
+          "jobId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "JobStatus" : {
+        "type" : "string",
+        "enum" : [ "ERROR", "EXECUTED", "SCHEDULED", "RETRY", "CANCELED" ]
+      },
+      "JobV2" : {
+        "type" : "object",
+        "required" : [ "schedule", "retry", "recipient" ],
+        "description" : "Defines a job that can be managed by the jobs service.",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "The unique identifier of the job in the system, this value is set by the jobs service."
+          },
+          "correlationId" : {
+            "type" : "string",
+            "description" : "Logical user provided identifier of the job in the system."
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/State"
+          },
+          "schedule" : {
+            "$ref" : "#/components/schemas/Schedule"
+          },
+          "retry" : {
+            "$ref" : "#/components/schemas/Retry"
+          },
+          "recipient" : {
+            "$ref" : "#/components/schemas/Recipient"
+          },
+          "executionTimeout" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Optional configuration that establishes the time limit for the current Job execution attempt to finish. When this timeout is exceeded the execution attempt is considered as failed, and depending on the Job retry  configuration, the execution can be retried or the Job will be marked as ERROR. Every Recipient type has a default timeout configuration that will apply automatically if this value is not set, and a maximum timeout configuration that can not be exceeded by current value."
+          },
+          "executionTimeoutUnit" : {
+            "$ref" : "#/components/schemas/TemporalUnit",
+            "type" : "string",
+            "description" : "The unit for the executionTimeout. If the executionTimeout is set and the unit is left empty MILLISECONDS are assumed. If the unit is set and the executionTimeout is left empty this value is ignored."
+          }
+        }
+      },
+      "JsonNode" : {
+        "type" : "object",
+        "properties" : {
+          "empty" : {
+            "type" : "boolean"
+          },
+          "valueNode" : {
+            "type" : "boolean"
+          },
+          "containerNode" : {
+            "type" : "boolean"
+          },
+          "missingNode" : {
+            "type" : "boolean"
+          },
+          "array" : {
+            "type" : "boolean"
+          },
+          "object" : {
+            "type" : "boolean"
+          },
+          "nodeType" : {
+            "$ref" : "#/components/schemas/JsonNodeType"
+          },
+          "pojo" : {
+            "type" : "boolean"
+          },
+          "number" : {
+            "type" : "boolean"
+          },
+          "integralNumber" : {
+            "type" : "boolean"
+          },
+          "floatingPointNumber" : {
+            "type" : "boolean"
+          },
+          "short" : {
+            "type" : "boolean"
+          },
+          "int" : {
+            "type" : "boolean"
+          },
+          "long" : {
+            "type" : "boolean"
+          },
+          "float" : {
+            "type" : "boolean"
+          },
+          "double" : {
+            "type" : "boolean"
+          },
+          "bigDecimal" : {
+            "type" : "boolean"
+          },
+          "bigInteger" : {
+            "type" : "boolean"
+          },
+          "textual" : {
+            "type" : "boolean"
+          },
+          "boolean" : {
+            "type" : "boolean"
+          },
+          "null" : {
+            "type" : "boolean"
+          },
+          "binary" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "JsonNodeType" : {
+        "type" : "string",
+        "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ]
+      },
+      "OffsetDateTime" : {
+        "type" : "string",
+        "format" : "date-time"
+      },
+      "OrderDrinkModelInput" : {
+        "type" : "object",
+        "properties" : {
+          "drinkOrder" : {
+            "$ref" : "#/components/schemas/DrinkOrder"
+          }
+        }
+      },
+      "OrderDrinkModelOutput" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "drinkOrder" : {
+            "$ref" : "#/components/schemas/DrinkOrder"
+          }
+        }
+      },
+      "OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskInput" : {
+        "type" : "object",
+        "properties" : {
+          "cardPayment" : {
+            "$ref" : "#/components/schemas/CardPayment"
+          },
+          "Interface" : {
+            "type" : "string"
+          },
+          "Operation" : {
+            "type" : "string"
+          },
+          "interfaceImplementationRef" : {
+            "type" : "string"
+          },
+          "operationImplementationRef" : {
+            "type" : "string"
+          },
+          "implementation" : {
+            "type" : "string"
+          },
+          "interface" : {
+            "type" : "string"
+          },
+          "operation" : {
+            "type" : "string"
+          }
+        }
+      },
+      "OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskModel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "state" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "phase" : {
+            "type" : "string"
+          },
+          "phaseStatus" : {
+            "type" : "string"
+          },
+          "parameters" : {
+            "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskInput"
+          },
+          "results" : {
+            "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput"
+          },
+          "params" : {
+            "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput"
+          }
+        }
+      },
+      "OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput" : {
+        "type" : "object",
+        "properties" : {
+          "paymentStatus" : {
+            "type" : "string"
+          }
+        }
+      },
+      "OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskInput" : {
+        "type" : "object"
+      },
+      "OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskModel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "state" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "phase" : {
+            "type" : "string"
+          },
+          "phaseStatus" : {
+            "type" : "string"
+          },
+          "parameters" : {
+            "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskInput"
+          },
+          "results" : {
+            "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput"
+          },
+          "params" : {
+            "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput"
+          }
+        }
+      },
+      "OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput" : {
+        "type" : "object",
+        "properties" : {
+          "isPaid" : {
+            "type" : "string"
+          }
+        }
+      },
+      "OrderStatus" : {
+        "type" : "string",
+        "enum" : [ "ORDERED", "RECEIVED", "PAYMENT", "INPROGRESS", "READY", "CANCELLED" ]
+      },
+      "PaymentType" : {
+        "type" : "string",
+        "enum" : [ "CASH", "CARD" ]
+      },
+      "ProcessMigrationSpec" : {
+        "type" : "object",
+        "properties" : {
+          "targetProcessId" : {
+            "type" : "string"
+          },
+          "targetProcessVersion" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Recipient" : {
+        "type" : "object",
+        "required" : [ "type" ],
+        "description" : "Generic definition for a Recipient, users must provide instances of subclasses of this schema to create a job.",
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "http" : "#/components/schemas/HttpRecipient",
+            "sink" : "#/components/schemas/SinkRecipient"
+          }
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Retry" : {
+        "type" : "object",
+        "description" : "The retry configuration establishes the number of times a failing job execution must be retried before it’s considered as FAILED.",
+        "properties" : {
+          "maxRetries" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of retries to execute in case of failures.",
+            "default" : 3
+          },
+          "delay" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Time delay between the retries.",
+            "default" : 0
+          },
+          "delayUnit" : {
+            "$ref" : "#/components/schemas/TemporalUnit"
+          },
+          "maxDuration" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Maximum amount of time to continue retrying if no successful execution was produced.",
+            "default" : 180000
+          },
+          "durationUnit" : {
+            "$ref" : "#/components/schemas/TemporalUnit"
+          }
+        }
+      },
+      "Schedule" : {
+        "type" : "object",
+        "required" : [ "type" ],
+        "description" : "Generic definition for a Schedule, users must provide instances of subclasses of this schema.",
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "cron" : "#/components/schemas/CronSchedule",
+            "timer" : "#/components/schemas/TimerSchedule"
+          }
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ScheduledJob" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "expirationTime" : {
+            "$ref" : "#/components/schemas/ZonedDateTime"
+          },
+          "priority" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "callbackEndpoint" : {
+            "type" : "string"
+          },
+          "processInstanceId" : {
+            "type" : "string"
+          },
+          "rootProcessInstanceId" : {
+            "type" : "string"
+          },
+          "processId" : {
+            "type" : "string"
+          },
+          "rootProcessId" : {
+            "type" : "string"
+          },
+          "nodeInstanceId" : {
+            "type" : "string"
+          },
+          "repeatInterval" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "repeatLimit" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "scheduledId" : {
+            "type" : "string"
+          },
+          "retries" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/JobStatus"
+          },
+          "lastUpdate" : {
+            "$ref" : "#/components/schemas/ZonedDateTime"
+          },
+          "executionCounter" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "executionResponse" : {
+            "$ref" : "#/components/schemas/JobExecutionResponse"
+          }
+        }
+      },
+      "SinkRecipient" : {
+        "type" : "object",
+        "required" : [ "sinkUrl", "contentMode", "ce-specversion", "ce-source", "ce-type" ],
+        "description" : "Recipient definition that delivers a cloud event to a knative sink.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Recipient"
+        } ],
+        "properties" : {
+          "sinkUrl" : {
+            "type" : "string",
+            "description" : "Url of the knative sink that will receive the cloud event."
+          },
+          "contentMode" : {
+            "$ref" : "#/components/schemas/ContentMode"
+          },
+          "ce-specversion" : {
+            "$ref" : "#/components/schemas/SpecVersion"
+          },
+          "ce-source" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "ce-type" : {
+            "type" : "string"
+          },
+          "ce-subject" : {
+            "type" : "string"
+          },
+          "ce-datacontenttype" : {
+            "type" : "string"
+          },
+          "ce-dataschema" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "ce-extensions" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          },
+          "payload" : {
+            "$ref" : "#/components/schemas/SinkRecipientPayloadData"
+          }
+        }
+      },
+      "SinkRecipientBinaryPayloadData" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/SinkRecipientPayloadData"
+        } ],
+        "properties" : {
+          "data" : {
+            "type" : "string",
+            "format" : "binary"
+          }
+        }
+      },
+      "SinkRecipientJsonPayloadData" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/SinkRecipientPayloadData"
+        } ],
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/JsonNode"
+          }
+        }
+      },
+      "SinkRecipientPayloadData" : {
+        "type" : "object",
+        "required" : [ "type" ],
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "binary" : "#/components/schemas/SinkRecipientBinaryPayloadData",
+            "json" : "#/components/schemas/SinkRecipientJsonPayloadData"
+          }
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SlaPayload" : {
+        "type" : "object",
+        "properties" : {
+          "expirationTime" : {
+            "$ref" : "#/components/schemas/ZonedDateTime"
+          }
+        }
+      },
+      "SourceFile" : {
+        "type" : "object",
+        "properties" : {
+          "uri" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SpecVersion" : {
+        "type" : "string",
+        "enum" : [ "0.3", "1.0" ]
+      },
+      "State" : {
+        "type" : "string",
+        "enum" : [ "SCHEDULED", "RETRY", "EXECUTED", "ERROR", "CANCELED" ],
+        "description" : "Available states for a Job."
+      },
+      "TaskModel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "state" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "phase" : {
+            "type" : "string"
+          },
+          "phaseStatus" : {
+            "type" : "string"
+          },
+          "parameters" : { },
+          "results" : { }
+        }
+      },
+      "TemporalUnit" : {
+        "type" : "string",
+        "enum" : [ "MILLIS", "SECONDS", "MINUTES", "HOURS", "DAYS" ]
+      },
+      "TerminationType" : {
+        "type" : "string",
+        "enum" : [ "COMPLETED", "ABORT", "FAILED", "EXITED", "OBSOLETE", "ERROR" ]
+      },
+      "TimerSchedule" : {
+        "type" : "object",
+        "description" : "Timer schedules establishes that a job must be executed at a given date time and can be repeated a configurable number of times.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Schedule"
+        } ],
+        "properties" : {
+          "startTime" : {
+            "$ref" : "#/components/schemas/OffsetDateTime",
+            "type" : "string",
+            "description" : "Initial fire time for the job in the ISO-8601 standard.",
+            "example" : "2023-01-30T12:01:15+01:00"
+          },
+          "repeatCount" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of times that the job execution must be repeated.",
+            "default" : 0
+          },
+          "delay" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Time delay between executions.",
+            "default" : 0
+          },
+          "delayUnit" : {
+            "$ref" : "#/components/schemas/TemporalUnit"
+          }
+        }
+      },
+      "TransitionInfo" : {
+        "type" : "object",
+        "properties" : {
+          "transitionId" : {
+            "type" : "string"
+          },
+          "data" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          }
+        }
+      },
+      "UserTaskState" : {
+        "type" : "object",
+        "properties" : {
+          "terminate" : {
+            "$ref" : "#/components/schemas/TerminationType"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UserTaskTransitionView" : {
+        "type" : "object",
+        "properties" : {
+          "transitionId" : {
+            "type" : "string"
+          },
+          "source" : {
+            "$ref" : "#/components/schemas/UserTaskState"
+          },
+          "target" : {
+            "$ref" : "#/components/schemas/UserTaskState"
+          }
+        }
+      },
+      "UserTaskView" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "userTaskId" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/UserTaskState"
+          },
+          "taskName" : {
+            "type" : "string"
+          },
+          "taskDescription" : {
+            "type" : "string"
+          },
+          "taskPriority" : {
+            "type" : "string"
+          },
+          "potentialUsers" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "potentialGroups" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "adminUsers" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "adminGroups" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "excludedUsers" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "externalReferenceId" : {
+            "type" : "string"
+          },
+          "actualOwner" : {
+            "type" : "string"
+          },
+          "inputs" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          },
+          "outputs" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          },
+          "metadata" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          }
+        }
+      },
+      "ZonedDateTime" : {
+        "type" : "string",
+        "format" : "date-time",
+        "examples" : [ "2022-03-10T12:15:50-04:00" ]
+      }
+    },
+    "securitySchemes" : {
+      "SecurityScheme" : {
+        "type" : "openIdConnect",
+        "description" : "Authentication",
+        "openIdConnectUrl" : "http://keycloak:8080/realms/coffee-shop-realm/.well-known/openid-configuration"
+      }
+    }
+  },
+  "tags" : [ {
+    "name" : "OrderDrink"
+  } ],
+  "paths" : {
+    "/OrderDrink" : {
+      "get" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "businessKey",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrinkModelInput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/OrderDrink/Service_CardPayment/schema" : {
+      "get" : {
+        "tags" : [ "OrderDrink" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : { }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Schema _ Service _ Card Payment _3"
+      }
+    },
+    "/OrderDrink/Task/schema" : {
+      "get" : {
+        "tags" : [ "OrderDrink" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : { }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Schema _ Task _2"
+      }
+    },
+    "/OrderDrink/schema" : {
+      "get" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/OrderDrink/{id}" : {
+      "put" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrinkModelInput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "patch" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrinkModelInput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/OrderDrink/{id}/Event_Sub-Error" : {
+      "post" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Signal _0"
+      }
+    },
+    "/OrderDrink/{id}/PaymentError" : {
+      "post" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Signal _1"
+      }
+    },
+    "/OrderDrink/{id}/Service_CardPayment/{taskId}" : {
+      "put" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Save Task _ Service _ Card Payment _3"
+      },
+      "get" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskModel"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Work Item _ Service _ Card Payment _3"
+      },
+      "post" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "phase",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "complete"
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Complete Task _ Service _ Card Payment _3"
+      },
+      "delete" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "phase",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "abort"
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Abort Task _ Service _ Card Payment _3"
+      }
+    },
+    "/OrderDrink/{id}/Service_CardPayment/{taskId}/phases/{phase}" : {
+      "post" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "phase",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrink__AFDC49E1_6F91_40ED_AF07_0011851D3F01_TaskOutput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Task Transition _ Service _ Card Payment _3"
+      }
+    },
+    "/OrderDrink/{id}/Service_CardPayment/{taskId}/schema" : {
+      "get" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : { }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Schema And Phases _ Service _ Card Payment _3"
+      }
+    },
+    "/OrderDrink/{id}/Task/{taskId}" : {
+      "put" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Save Task _ Task _2"
+      },
+      "get" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskModel"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Work Item _ Task _2"
+      },
+      "post" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "phase",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "complete"
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Complete Task _ Task _2"
+      },
+      "delete" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "phase",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "abort"
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Abort Task _ Task _2"
+      }
+    },
+    "/OrderDrink/{id}/Task/{taskId}/phases/{phase}" : {
+      "post" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "phase",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDrink__BD6210E3_F7CB_4734_9A5A_8D4CD8B2B104_TaskOutput"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderDrinkModelOutput"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Task Transition _ Task _2"
+      }
+    },
+    "/OrderDrink/{id}/Task/{taskId}/schema" : {
+      "get" : {
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : { }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Schema And Phases _ Task _2"
+      }
+    },
+    "/OrderDrink/{id}/tasks" : {
+      "get" : {
+        "summary" : "OrderDrink",
+        "description" : "",
+        "tags" : [ "OrderDrink" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TaskModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ValidateMurchant" : {
+      "post" : {
+        "requestBody" : {
+          "description" : "DMN input",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "/ValidateMurchant.json#/definitions/InputSet"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "DMN output",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "/ValidateMurchant.json#/definitions/OutputSet"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Dmn",
+        "tags" : [ "Validate Murchant Resource" ]
+      },
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/xml" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Dmn",
+        "tags" : [ "Validate Murchant Resource" ]
+      }
+    },
+    "/ValidateMurchant/dmnresult" : {
+      "post" : {
+        "requestBody" : {
+          "description" : "DMN input",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "/ValidateMurchant.json#/definitions/InputSet"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Dmn _dmnresult",
+        "tags" : [ "Validate Murchant Resource" ]
+      }
+    },
+    "/callback" : {
+      "post" : {
+        "operationId" : "postCallbackTest",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Post",
+        "tags" : [ "Callback Resource Test" ]
+      },
+      "get" : {
+        "operationId" : "getCallbackTest",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get",
+        "tags" : [ "Callback Resource Test" ]
+      }
+    },
+    "/data-audit/q" : {
+      "post" : {
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          }
+        }
+      }
+    },
+    "/data-audit/r" : {
+      "get" : {
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        }
+      },
+      "post" : {
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          }
+        }
+      }
+    },
+    "/graphql" : {
+      "get" : {
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        }
+      },
+      "post" : {
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          }
+        }
+      }
+    },
+    "/jobs" : {
+      "post" : {
+        "operationId" : "createJob",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Job"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScheduledJob"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Create",
+        "tags" : [ "Job Resource" ]
+      }
+    },
+    "/jobs/{id}" : {
+      "patch" : {
+        "operationId" : "patchJob",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Job"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScheduledJob"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Patch",
+        "tags" : [ "Job Resource" ]
+      },
+      "get" : {
+        "operationId" : "getJob",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScheduledJob"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get",
+        "tags" : [ "Job Resource" ]
+      },
+      "delete" : {
+        "operationId" : "deleteJob",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScheduledJob"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Job Resource" ]
+      }
+    },
+    "/management/jobs/{processId}/instances/{processInstanceId}/timers/{timerId}" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "timerId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : "0"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Trigger Timer",
+        "tags" : [ "Callback Jobs Service Resource" ]
+      }
+    },
+    "/management/processes" : {
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Processes",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/sources" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "uri",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Source File By Uri",
+        "tags" : [ "Source Files Resource" ]
+      }
+    },
+    "/management/processes/{processId}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Process Info",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}" : {
+      "delete" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Cancel Process Instance Id",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/error" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Instance In Error",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/migrate" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProcessMigrationSpec"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Migrate Instance",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/nodeInstances" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Work Items In Process Instance",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "nodeInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Retrigger Node Instance Id",
+        "tags" : [ "Process Instance Management Resource" ]
+      },
+      "delete" : {
+        "parameters" : [ {
+          "name" : "nodeInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Cancel Node Instance Id",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}/sla" : {
+      "patch" : {
+        "parameters" : [ {
+          "name" : "nodeInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SlaPayload"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Update Node Instance Sla",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}/timers" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "nodeInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Node Instance Timers",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/nodes/{nodeId}" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "nodeId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Trigger Node Instance Id",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/retrigger" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Retrigger Instance In Error",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/skip" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Skip Instance In Error",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/sla" : {
+      "patch" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SlaPayload"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Update Process Instance Sla",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/instances/{processInstanceId}/timers" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Process Instance Timers",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/migrate" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProcessMigrationSpec"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Migrate All Instances",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/nodes" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Process Nodes",
+        "tags" : [ "Process Instance Management Resource" ]
+      }
+    },
+    "/management/processes/{processId}/source" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Source File By Process Id",
+        "tags" : [ "Source Files Resource" ]
+      }
+    },
+    "/management/processes/{processId}/sources" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/SourceFile"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Source Files By Process Id",
+        "tags" : [ "Source Files Resource" ]
+      }
+    },
+    "/management/shutdown" : {
+      "post" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        },
+        "summary" : "Shutdown Hook",
+        "tags" : [ "Job Service Management Resource" ]
+      }
+    },
+    "/messaging/topics" : {
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Topics",
+        "tags" : [ "Quarkus Topics Information Resource" ]
+      }
+    },
+    "/orders" : {
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Hello",
+        "tags" : [ "Order Resource" ]
+      }
+    },
+    "/svg/processes/{processId}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Process Svg",
+        "tags" : [ "Process Svg Resource" ]
+      }
+    },
+    "/svg/processes/{processId}/instances/{processInstanceId}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "processInstanceId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get Execution Path By Process Instance Id",
+        "tags" : [ "Process Svg Resource" ]
+      }
+    },
+    "/usertasks/instance" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UserTaskView"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "List",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserTaskView"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Find",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/attachments" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Attachment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Attachments",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "post" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AttachmentInfo"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Attachment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Add Attachment",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/attachments/{attachmentId}" : {
+      "put" : {
+        "parameters" : [ {
+          "name" : "attachmentId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AttachmentInfo"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Attachment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Update Attachment",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "get" : {
+        "parameters" : [ {
+          "name" : "attachmentId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Attachment"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Attachment",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "delete" : {
+        "parameters" : [ {
+          "name" : "attachmentId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Attachment"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Delete Attachment",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/comments" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Comment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Comments",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "post" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CommentInfo"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Add Comment",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/comments/{commentId}" : {
+      "put" : {
+        "parameters" : [ {
+          "name" : "commentId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CommentInfo"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Update Comment",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "get" : {
+        "parameters" : [ {
+          "name" : "commentId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Comment"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get Comment",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "delete" : {
+        "parameters" : [ {
+          "name" : "commentId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Comment"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Delete Comment",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/inputs" : {
+      "put" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserTaskView"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Set Inputs",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/outputs" : {
+      "put" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserTaskView"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Set Output",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/usertasks/instance/{taskId}/transition" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TransitionInfo"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserTaskView"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Transition",
+        "tags" : [ "User Tasks Resource" ]
+      },
+      "get" : {
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "user",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UserTaskTransitionView"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Transition",
+        "tags" : [ "User Tasks Resource" ]
+      }
+    },
+    "/v2/jobs" : {
+      "post" : {
+        "operationId" : "createJobV2",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/JobV2"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobV2"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "summary" : "Create",
+        "tags" : [ "Job Resource V 2" ]
+      }
+    },
+    "/v2/jobs/{id}" : {
+      "get" : {
+        "operationId" : "getJobV2",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobV2"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get",
+        "tags" : [ "Job Resource V 2" ]
+      },
+      "delete" : {
+        "operationId" : "deleteJobV2",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobV2"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Job Resource V 2" ]
+      }
+    }
+  },
+  "info" : {
+    "title" : "order-app API",
+    "version" : "1.0.0-SNAPSHOT"
+  }
+}

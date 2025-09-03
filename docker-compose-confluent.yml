@@ -1,4 +1,4 @@
-name: coffee-shop
+name: bamoe-infra
 
 services:
   # BAMOE Maven Repository
@@ -8,7 +8,7 @@ services:
     ports:
       - "${MAVEN_REPO_PORT}:8080"
     networks:
-      - coffee-network
+      - kogito-network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 10s
@@ -30,7 +30,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
     networks:
-      - coffee-network
+      - kogito-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kogito -d brew-app-db"]
       interval: 10s
@@ -38,32 +38,35 @@ services:
       retries: 5
     # Default profile - runs without specifying profile
 
-  # Apache Zookeeper (Strimzi)
+  # Apache Kafka
   zookeeper:
-    image: quay.io/strimzi/kafka:0.39.0-kafka-3.6.0
-    container_name: strimzi-zookeeper
-    command: ["sh", "-c", "bin/zookeeper-server-start.sh config/zookeeper.properties"]
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: kafka-zookeeper
     environment:
-      LOG_DIR: /tmp/logs
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "${ZOOKEEPER_PORT:-2181}:2181"
+    - "${ZOOKEEPER_PORT:-2181}:2181"
     networks:
-      - coffee-network
+      - kogito-network
 
-  # Apache Kafka (Strimzi)
   kafka:
-    image: quay.io/strimzi/kafka:0.39.0-kafka-3.6.0
-    container_name: strimzi-kafka
-    command: ["sh", "-c", "bin/kafka-server-start.sh config/server.properties --override zookeeper.connect=zookeeper:2181 --override listeners=PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092 --override advertised.listeners=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092 --override listener.security.protocol.map=PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT --override inter.broker.listener.name=INTERNAL --override offsets.topic.replication.factor=1"]
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-broker
     depends_on:
       - zookeeper
     ports:
-      - "${KAFKA_PORT:-9092}:9092"
-      - "29092:29092"
+    - "${KAFKA_PORT:-9092}:9092"
     environment:
-      LOG_DIR: /tmp/logs
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
-      - coffee-network
+      - kogito-network
 
   # Keycloak IdP
   keycloak:
@@ -83,14 +86,13 @@ services:
     ports:
       - "${KEYCLOAK_PORT:-8080}:8080"
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\":\"UP\"' <&3 && exec 3<&-"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 90s
     networks:
-      - coffee-network
-    profiles: ["container"]
+      - kogito-network
 
   # Brew Application Service
   brew-app:
@@ -120,15 +122,8 @@ services:
     depends_on:
       - kafka
       - kogito-postgres
-      - keycloak
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/q/health/ready || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     networks:
-      - coffee-network
+      - kogito-network
     profiles: ["container"]
 
   # Order Application Service
@@ -159,15 +154,8 @@ services:
     depends_on:
       - kafka
       - kogito-postgres
-      - keycloak
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/q/health/ready || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     networks:
-      - coffee-network
+      - kogito-network
     profiles: ["container"]
 
   #BAMOE Client API Service
@@ -196,7 +184,7 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - coffee-network
+      - kogito-network
     profiles: ["in-progess"]
 
   # Process management console
@@ -220,10 +208,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    depends_on:
-      - keycloak
     networks:
-      - coffee-network
+      - kogito-network
     profiles: ["container"]
 
 volumes:
@@ -231,6 +217,6 @@ volumes:
     driver: local
 
 networks:
-  coffee-network:
-    name: coffee-network
+  kogito-network:
+    name: kogito-network
     driver: bridge
