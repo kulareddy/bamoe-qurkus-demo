@@ -9,9 +9,13 @@
 
 # Load environment variables from .env file if it exists
 if [ -f "../.env" ]; then
-    export $(grep -v '^#' ../.env | xargs)
+    set -a  # automatically export all variables
+    source ../.env
+    set +a
 elif [ -f ".env" ]; then
-    export $(grep -v '^#' .env | xargs)
+    set -a  # automatically export all variables
+    source .env
+    set +a
 fi
 
 KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:9180}"
