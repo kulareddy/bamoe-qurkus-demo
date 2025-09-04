@@ -7,10 +7,17 @@
 # Remove set -e to allow individual failures without stopping the script
 # set -e
 
-KEYCLOAK_URL="http://localhost:9180"
-REALM_NAME="coffee-shop-realm"
-ADMIN_USER="admin"
-ADMIN_PASSWORD="admin123"
+# Load environment variables from .env file if it exists
+if [ -f "../.env" ]; then
+    export $(grep -v '^#' ../.env | xargs)
+elif [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:9180}"
+REALM_NAME="${KEYCLOAK_REALM_NAME:-kogito-realm}"
+ADMIN_USER="${KEYCLOAK_ADMIN:-admin}"
+ADMIN_PASSWORD="${KEYCLOAK_ADMIN_PASSWORD:-admin123}"
 RBAC_FILE="kogito-rbac.txt"
 
 # Function to find RBAC file

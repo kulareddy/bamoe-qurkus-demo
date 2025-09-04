@@ -1,0 +1,1010 @@
+{
+	"info": {
+		"_postman_id": "coffee-shop-auth-collection",
+		"name": "Coffee Shop RBAC Authentication",
+		"description": "Complete authentication collection for Coffee Shop microservices platform with BAMOE and Keycloak",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "coffee-shop-platform"
+	},
+	"auth": {
+		"type": "noauth"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication Endpoints",
+			"item": [
+				{
+					"name": "Get Realm Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/.well-known/openid_configuration",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								".well-known",
+								"openid_configuration"
+							]
+						},
+						"description": "Get OpenID Connect configuration for the coffee-shop realm"
+					}
+				}
+			]
+		},
+		{
+			"name": "🏢 Coffee Shop API Client",
+			"item": [
+				{
+					"name": "Admin Token (API Client)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('admin_api_token', response.access_token);",
+									"    pm.globals.set('admin_refresh_token', response.refresh_token);",
+									"    console.log('Admin API token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get admin token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "coffee-shop-api"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "admin"
+								},
+								{
+									"key": "password",
+									"value": "admin123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for admin user using coffee-shop-api client"
+					}
+				},
+				{
+					"name": "Manager Token (API Client)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('manager_api_token', response.access_token);",
+									"    console.log('Manager API token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get manager token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "coffee-shop-api"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "manager1"
+								},
+								{
+									"key": "password",
+									"value": "manager123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for manager1 user using coffee-shop-api client"
+					}
+				},
+				{
+					"name": "Cashier Token (API Client)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('cashier_api_token', response.access_token);",
+									"    console.log('Cashier API token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get cashier token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "coffee-shop-api"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "cashier1"
+								},
+								{
+									"key": "password",
+									"value": "cashier123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for cashier1 user using coffee-shop-api client"
+					}
+				},
+				{
+					"name": "Barista Token (API Client)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('barista_api_token', response.access_token);",
+									"    console.log('Barista API token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get barista token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "coffee-shop-api"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "barista1"
+								},
+								{
+									"key": "password",
+									"value": "barista123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for barista1 user using coffee-shop-api client"
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Order App Client",
+			"item": [
+				{
+					"name": "Admin Token (Order App)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('admin_order_token', response.access_token);",
+									"    console.log('Admin Order App token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get admin order token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "order-app-client-id"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "admin"
+								},
+								{
+									"key": "password",
+									"value": "admin123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for admin user using order-app-client-id"
+					}
+				},
+				{
+					"name": "Manager Token (Order App)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('manager_order_token', response.access_token);",
+									"    console.log('Manager Order App token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get manager order token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "order-app-client-id"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "manager1"
+								},
+								{
+									"key": "password",
+									"value": "manager123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for manager1 user using order-app-client-id"
+					}
+				},
+				{
+					"name": "Cashier Token (Order App)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('cashier_order_token', response.access_token);",
+									"    console.log('Cashier Order App token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get cashier order token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "order-app-client-id"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "cashier1"
+								},
+								{
+									"key": "password",
+									"value": "cashier123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for cashier1 user using order-app-client-id"
+					}
+				}
+			]
+		},
+		{
+			"name": "🍺 Brew App Client",
+			"item": [
+				{
+					"name": "Admin Token (Brew App)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('admin_brew_token', response.access_token);",
+									"    console.log('Admin Brew App token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get admin brew token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "brew-app-client-id"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "admin"
+								},
+								{
+									"key": "password",
+									"value": "admin123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for admin user using brew-app-client-id"
+					}
+				},
+				{
+					"name": "Barista Token (Brew App)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('barista_brew_token', response.access_token);",
+									"    console.log('Barista Brew App token stored successfully');",
+									"} else {",
+									"    console.log('Failed to get barista brew token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								},
+								{
+									"key": "client_id",
+									"value": "brew-app-client-id"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "username",
+									"value": "barista1"
+								},
+								{
+									"key": "password",
+									"value": "barista123"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile email"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Get access token for barista1 user using brew-app-client-id"
+					}
+				}
+			]
+		},
+		{
+			"name": "🔄 Token Refresh & Management",
+			"item": [
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('admin_api_token', response.access_token);",
+									"    if (response.refresh_token) {",
+									"        pm.globals.set('admin_refresh_token', response.refresh_token);",
+									"    }",
+									"    console.log('Token refreshed successfully');",
+									"} else {",
+									"    console.log('Failed to refresh token:', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token"
+								},
+								{
+									"key": "client_id",
+									"value": "coffee-shop-api"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{admin_refresh_token}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Refresh access token using refresh token"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "coffee-shop-api"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{admin_refresh_token}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_url}}/realms/{{realm_name}}/protocol/openid-connect/logout",
+							"host": [
+								"{{keycloak_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"logout"
+							]
+						},
+						"description": "Logout and invalidate tokens"
+					}
+				}
+			]
+		},
+		{
+			"name": "🧪 API Testing with Tokens",
+			"item": [
+				{
+					"name": "Test Order App Health (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_order_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/q/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"q",
+								"health"
+							]
+						},
+						"description": "Test Order App health endpoint with admin token"
+					}
+				},
+				{
+					"name": "Test Brew App Health (Barista)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{barista_brew_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/q/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"q",
+								"health"
+							]
+						},
+						"description": "Test Brew App health endpoint with barista token"
+					}
+				},
+				{
+					"name": "Get OrderDrink Processes (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_order_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/OrderDrink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"OrderDrink"
+							]
+						},
+						"description": "Get all OrderDrink process instances with admin token"
+					}
+				},
+				{
+					"name": "Create OrderDrink Process (Cashier)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{cashier_order_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"drinkOrder\": {\n    \"drink\": \"Latte\",\n    \"size\": \"Large\",\n    \"customerName\": \"Test Customer\",\n    \"price\": 4.50\n  }\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/OrderDrink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"OrderDrink"
+							]
+						},
+						"description": "Create a new OrderDrink process instance with cashier token"
+					}
+				},
+				{
+					"name": "Get MakeDrink Processes (Barista)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{barista_brew_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/MakeDrink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"MakeDrink"
+							]
+						},
+						"description": "Get all MakeDrink process instances with barista token"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "keycloak_url",
+			"value": "http://localhost:9180",
+			"type": "string"
+		},
+		{
+			"key": "realm_name",
+			"value": "coffee-shop-realm",
+			"type": "string"
+		},
+		{
+			"key": "client_secret",
+			"value": "coffee-shop-secret",
+			"type": "string"
+		}
+	]
+}
