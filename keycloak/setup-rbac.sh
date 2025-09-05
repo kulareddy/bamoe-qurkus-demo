@@ -8,15 +8,32 @@
 # set -e
 
 # Load environment variables from .env file if it exists
-if [ -f "../.env" ]; then
-    set -a  # automatically export all variables
-    source ../.env
-    set +a
-elif [ -f ".env" ]; then
-    set -a  # automatically export all variables
-    source .env
-    set +a
-fi
+load_env_file() {
+    local env_file=""
+    if [ -f "../.env" ]; then
+        env_file="../.env"
+    elif [ -f ".env" ]; then
+        env_file=".env"
+    else
+        return
+    fi
+    
+    # Read and export each variable individually, skipping variable substitution lines
+    while IFS= read -r line; do
+        # Skip comments and empty lines
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+        
+        # Skip lines with variable substitution for now (they cause issues with source)
+        [[ "$line" =~ \$\{ ]] && continue
+        
+        # Export valid variable assignments
+        if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+            export "$line"
+        fi
+    done < "$env_file"
+}
+
+load_env_file
 
 KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:9180}"
 REALM_NAME="${KEYCLOAK_REALM_NAME:-kogito-realm}"
@@ -91,10 +108,9 @@ show_info() {
     echo "Admin Password: admin123"
     echo "Realm: ${REALM_NAME}"
     echo "Clients:"
-    echo "  - coffee-shop-api (Spring Boot API - Confidential)"
-    echo "  - order-app (Quarkus Process - Confidential)"
-    echo "  - brew-app (Quarkus Process - Confidential)"
-    echo "  - management-console (Frontend Console - Public)"
+    echo "  - artifact-management-api (Spring Boot API - Confidential)"
+    echo "  - artifact-management-process (Quarkus Process - Confidential)"
+    echo "  - artifact-management-console (Frontend Console - Public)"
     echo ""
     echo "Token Endpoint:"
     echo "${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/token"
@@ -110,7 +126,7 @@ show_info() {
     echo ""
     echo "# Frontend Console (Public Client - requires Authorization Code Flow):"
     echo "Authorization URL: ${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/auth"
-    echo "Client ID: management-console (no secret required)"
+    echo "Client ID: artifact-management-console (no secret required)"
 }
 
 # Function to get test token
@@ -120,12 +136,12 @@ get_test_token() {
     local client_type=${3:-"api"}
     
     # Set client ID and default values
-    local client_id="coffee-shop-api"
-    local client_secret="coffee-shop-secret"
+    local client_id="artifact-management-api"
+    local client_secret="artifact-management-secret"
     local app_name="Spring Boot API"
     
     if [ "$client_type" = "process" ]; then
-        client_id="order-app-client-id"
+        client_id="artifact-management-process"
         app_name="Quarkus Process"
     fi
     
@@ -494,9 +510,24 @@ check_and_restore_clients() {
     local existing_clients=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/clients" \
         -H "Authorization: Bearer $token" | jq -r '.[].clientId')
     
-    # Define expected clients
-    local expected_clients=("coffee-shop-api" "brew-app-client-id" "order-app-client-id" "management-console")
+    # Read expected clients from RBAC file
+    local rbac_file_path=$(find_rbac_file)
+    local expected_clients=()
     local missing_clients=()
+    
+    # Parse RBAC file to get client IDs
+    while IFS= read -r line; do
+        [[ "$line" =~ ^#.*$ ]] && continue
+        [[ -z "$line" ]] && continue
+        
+        local cmd=$(echo "$line" | cut -d':' -f1)
+        if [ "$cmd" = "client" ]; then
+            local client_id=$(echo "$line" | cut -d':' -f2)
+            expected_clients+=("$client_id")
+        fi
+    done < "$rbac_file_path"
+    
+    echo -e "${BLUE}📋 Expected clients from RBAC file: ${expected_clients[*]}${NC}"
     
     # Check which clients are missing
     for expected_client in "${expected_clients[@]}"; do
