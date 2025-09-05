@@ -104,29 +104,59 @@ show_info() {
     echo -e "${BLUE}🔗 Keycloak Development Information${NC}"
     echo "===================================="
     echo "Admin Console: ${KEYCLOAK_URL}/admin"
-    echo "Admin User: admin"
-    echo "Admin Password: admin123"
+    echo "Admin User: ${ADMIN_USER}"
+    echo "Admin Password: ${ADMIN_PASSWORD}"
     echo "Realm: ${REALM_NAME}"
     echo "Clients:"
-    echo "  - artifact-management-api (Spring Boot API - Confidential)"
-    echo "  - artifact-management-process (Quarkus Process - Confidential)"
-    echo "  - artifact-management-console (Frontend Console - Public)"
+    # Dynamically read clients from RBAC file
+    local rbac_file_path=$(find_rbac_file)
+    if [ $? -eq 0 ] && [ -f "$rbac_file_path" ]; then
+        while IFS= read -r line; do
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "$line" ]] && continue
+            local cmd=$(echo "$line" | cut -d':' -f1)
+            if [ "$cmd" = "client" ]; then
+                local client_id=$(echo "$line" | cut -d':' -f2)
+                local description=$(echo "$line" | cut -d':' -f4)
+                if [ -z "$description" ]; then
+                    description="(No description)"
+                fi
+                echo "  - $client_id $description"
+            fi
+        done < "$rbac_file_path"
+    else
+        echo "  (Could not read clients from RBAC file)"
+    fi
     echo ""
     echo "Token Endpoint:"
     echo "${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/token"
     echo ""
     echo -e "${YELLOW}Quick Token Examples:${NC}"
-    echo "# Spring Boot API client tokens:"
-    echo "./setup-rbac.sh token admin admin123"
-    echo "./setup-rbac.sh token manager1 manager123"
-    echo ""
-    echo "# Quarkus Process client tokens:"
-    echo "./setup-rbac.sh token admin admin123 process"
-    echo "./setup-rbac.sh token cashier1 cashier123 process"
-    echo ""
-    echo "# Frontend Console (Public Client - requires Authorization Code Flow):"
-    echo "Authorization URL: ${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/auth"
-    echo "Client ID: artifact-management-console (no secret required)"
+    # Dynamically print example token commands for each client in RBAC file
+    if [ -f "$rbac_file_path" ]; then
+        while IFS= read -r line; do
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "$line" ]] && continue
+            local cmd=$(echo "$line" | cut -d':' -f1)
+            if [ "$cmd" = "client" ]; then
+                local cid=$(echo "$line" | cut -d':' -f2)
+                local cdesc=$(echo "$line" | cut -d':' -f4)
+                # Suggest a token command for each client
+                if [[ "$cid" =~ api$ ]]; then
+                    echo "# $cdesc client tokens:"
+                    echo "./setup-rbac.sh token admin admin123 api"
+                elif [[ "$cid" =~ process$ ]]; then
+                    echo "# $cdesc client tokens:"
+                    echo "./setup-rbac.sh token admin admin123 process"
+                elif [[ "$cid" =~ console$ ]]; then
+                    echo "# $cdesc (Public Client - requires Authorization Code Flow):"
+                    echo "Authorization URL: ${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/auth"
+                    echo "Client ID: $cid (no secret required)"
+                fi
+                echo ""
+            fi
+        done < "$rbac_file_path"
+    fi
 }
 
 # Function to get test token
@@ -134,31 +164,54 @@ get_test_token() {
     local username=${1:-"admin"}
     local password=${2:-"admin123"}
     local client_type=${3:-"api"}
-    
-    # Set client ID and default values
-    local client_id="artifact-management-api"
-    local client_secret="artifact-management-secret"
-    local app_name="Spring Boot API"
-    
-    if [ "$client_type" = "process" ]; then
-        client_id="artifact-management-process"
-        app_name="Quarkus Process"
-    fi
-    
-    # Read client secret from RBAC file
+
+    # Dynamically determine client_id, client_secret, and app_name from RBAC file
     local rbac_file_path=$(find_rbac_file)
+    local client_id=""
+    local client_secret=""
+    local app_name=""
     if [ $? -eq 0 ] && [ -f "$rbac_file_path" ]; then
-        client_secret=$(grep "^client:$client_id:" "$rbac_file_path" | cut -d':' -f3)
+        while IFS= read -r line; do
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "$line" ]] && continue
+            local cmd=$(echo "$line" | cut -d':' -f1)
+            if [ "$cmd" = "client" ]; then
+                local cid=$(echo "$line" | cut -d':' -f2)
+                local csecret=$(echo "$line" | cut -d':' -f3)
+                local cdesc=$(echo "$line" | cut -d':' -f4)
+                # Match client_type to client_id by suffix or type
+                if { [ "$client_type" = "api" ] && [[ "$cid" =~ api$ ]]; } || \
+                   { [ "$client_type" = "process" ] && [[ "$cid" =~ process$ ]]; } || \
+                   { [ "$client_type" = "console" ] && [[ "$cid" =~ console$ ]]; }; then
+                    client_id="$cid"
+                    client_secret="$csecret"
+                    app_name="$cdesc"
+                    break
+                fi
+            fi
+        done < "$rbac_file_path"
     fi
-    
-    # Fallback to hardcoded values if not found in file
-    if [ -z "$client_secret" ]; then
-        client_secret="coffee-shop-secret"
-        echo -e "${YELLOW}⚠️  Client secret not found in RBAC file, using fallback${NC}"
+
+    # Fallback to first client if not found
+    if [ -z "$client_id" ]; then
+        if [ -f "$rbac_file_path" ]; then
+            client_id=$(grep '^client:' "$rbac_file_path" | head -n1 | cut -d':' -f2)
+            client_secret=$(grep '^client:' "$rbac_file_path" | head -n1 | cut -d':' -f3)
+            app_name=$(grep '^client:' "$rbac_file_path" | head -n1 | cut -d':' -f4)
+        fi
     fi
-    
+
+    if [ -z "$client_id" ] || [ -z "$client_secret" ]; then
+        echo -e "${RED}❌ Could not determine client_id or client_secret from RBAC file${NC}"
+        return 1
+    fi
+
+    if [ -z "$app_name" ]; then
+        app_name="(No description)"
+    fi
+
     echo -e "${YELLOW}🔑 Getting access token for ${username} (${app_name})...${NC}"
-    
+
     local response=$(curl -s -X POST "${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/token" \
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "username=${username}" \
@@ -166,9 +219,9 @@ get_test_token() {
         -d "grant_type=password" \
         -d "client_id=${client_id}" \
         -d "client_secret=${client_secret}")
-    
+
     local access_token=$(echo $response | jq -r '.access_token')
-    
+
     if [ "$access_token" != "null" ] && [ "$access_token" != "" ]; then
         echo -e "${GREEN}✅ Access token obtained successfully!${NC}"
         echo -e "${YELLOW}Use this token for API calls:${NC}"
